@@ -1,0 +1,15 @@
+<launch>
+    <!-- Command line arguments -->
+    <arg name="gazebo" default = "true"/>
+    <arg name="world" default = "test_env"/>
+
+    <!-- Launch gazebo ROS -->
+    <include file = "$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="gui" value="$(arg gazebo)"/>
+        <arg name ="world_name" value="$(find swarm_sim)/worlds/$(arg world).world"/>
+    </include>
+
+    <!-- <node pkg="gazebo_ros" type="spawn_model" name="spawn_agent1"
+            args="-param robot_description -urdf -model agent1
+                -x -34.0 -y 18.5 -z 0.0 -Y 2.168162" respawn="false"/> -->
+</launch>
