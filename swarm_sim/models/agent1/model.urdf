@@ -1,33 +1,36 @@
 <?xml version = "1.0" ?>
-<!--TODO: Finish the links and joints of the sensors -->
 <robot name="agent1">
     
-    <joint name ="left_wheel_joint" type = "revolute">
+    <joint name ="lf_wheel_joint" type = "revolute">
         <parent link = "chassis"/>
-        <child link = "left_wheel"/>
+        <child link = "lf_wheel"/>
         <origin xyz ="-.09779 -.09 -.01079" rpy = "0 0 0"/>
         <axis xyz = "0 1 0"/>
         <limit lower = "0" upper = "0" effort = "0" velocity = "0"/>
     </joint>
 
-    <joint name ="right_wheel_joint" type = "revolute">
+    <joint name ="rf_wheel_joint" type = "revolute">
         <parent link = "chassis"/>
-        <child link = "right_wheel"/>
+        <child link = "rf_wheel"/>
         <origin xyz ="-.09779 .09 -.01079" rpy = "0 0 0"/>
         <axis xyz = "0 1 0"/>
         <limit lower = "0" upper = "0" effort = "0" velocity = "0"/>
     </joint>
 
-    <joint name ="left_caster_joint" type = "fixed">
+    <joint name ="lb_wheel_joint" type = "revolute">
         <parent link = "chassis"/>
-        <child link = "left_caster"/>    
+        <child link = "lb_wheel"/>    
         <origin xyz =".09779 -.09 -.01079" rpy = "0 0 0"/>
+        <axis xyz = "0 1 0"/>
+        <limit lower = "0" upper = "0" effort = "0" velocity = "0"/>
     </joint>
 
-    <joint name ="right_caster_joint" type = "fixed">
+    <joint name ="rb_wheel_joint" type = "revolute">
         <parent link = "chassis"/>
-        <child link = "right_caster"/>
+        <child link = "rb_wheel"/>
         <origin xyz =".09779 .09 -.01079" rpy = "0 0 0"/>
+        <axis xyz = "0 1 0"/>
+        <limit lower = "0" upper = "0" effort = "0" velocity = "0"/>
     </joint>
 
     <link name = "chassis">
@@ -53,7 +56,7 @@
         </visual>
     </link>
 
-    <link name = "left_wheel">
+    <link name = "lb_wheel">
       
       <inertial>
         <mass value = ".045"/>
@@ -77,7 +80,7 @@
 
     </link>
 
-    <link name = "right_wheel">
+    <link name = "rb_wheel">
       
       <inertial>
         <mass value = ".045"/>
@@ -101,52 +104,52 @@
     
     </link>
 
-    <link name = "left_caster">
+    <link name = "lf_wheel">
       
       <inertial>
         <mass value = ".045"/>
         <origin xyz = "0 0 0" rpy = "0 0 0"/>
-        <inertia ixx = "0.0052578" ixy = "0" ixz = "0" iyy = "0.0052578" iyz = "0" izz = "0.0052578"/>
+        <inertia ixx = ".00007" ixy = "0" ixz = "0" iyy = ".00007" iyz = "0" izz = ".000018375"/>
       </inertial>
-      
+
       <collision name = "collision">
         <origin xyz = "0 0 0" rpy = "-1.5707 0 0"/>
         <geometry>
-          <sphere radius = ".02921"/>
+            <cylinder radius = ".02921" length = ".0254"/>
         </geometry>
       </collision>
-      
+
       <visual name = "visual">
         <origin xyz = "0 0 0" rpy = "-1.5707 0 0"/>
         <geometry>
-          <sphere radius = ".02921"/>
+          <cylinder radius = ".02921" length = ".0254"/>
         </geometry>
       </visual> 
-   
+
     </link>
   
-    <link name = "right_caster">
+    <link name = "rf_wheel">
       
       <inertial>
         <mass value = ".045"/>
         <origin xyz = "0 0 0" rpy = "0 0 0"/>
-        <inertia ixx = "0.0052578" ixy = "0" ixz = "0" iyy = "0.0052578" iyz = "0" izz = "0.0052578"/>
+        <inertia ixx = ".00007" ixy = "0" ixz = "0" iyy = ".00007" iyz = "0" izz = ".000018375"/>
       </inertial>
-      
+
       <collision name = "collision">
         <origin xyz = "0 0 0" rpy = "-1.5707 0 0"/>
         <geometry>
-          <sphere radius = ".02921"/>
+            <cylinder radius = ".02921" length = ".0254"/>
         </geometry>
       </collision>
-      
+
       <visual name = "visual">
         <origin xyz = "0 0 0" rpy = "-1.5707 0 0"/>
         <geometry>
-         <sphere radius = ".02921"/>
+          <cylinder radius = ".02921" length = ".0254"/>
         </geometry>
-      </visual>
-    
+      </visual> 
+
     </link>
 
     <joint name = "imu joint" type = "fixed">
