@@ -1,0 +1,3 @@
+[submodule "hive_ui"]
+	path = hive_ui
+	url = https://github.com/ljdeme/hive_ui.git
