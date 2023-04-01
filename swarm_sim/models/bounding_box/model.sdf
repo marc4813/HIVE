@@ -112,7 +112,121 @@
                 </geometry>
             </visual>
         </link>
+        
+        <link name="cam_mount_back">
+        <pose>-1.5748 0 0.9144 1.5708 1.5708 0</pose>
+            <collision name="cam_mount_back_collision">
+                <geometry>
+                    <box>
+                        <size>1.2192 0.1016 0.3048</size>
+                    </box>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>100</mu>
+                            <mu2>50</mu2>
+                        </ode>
+                    </friction>
+                </surface>
+            </collision>
+            
+            <visual name="cam_mount_back_visual">
+                <geometry>
+                    <box>
+                        <size>1.2192 0.1016 0.3048</size>
+                    </box>
+                </geometry>
+            </visual>
+        </link>
+	
+	<link name="cam_mount_top">
+        <pose>0 0 1.5240 1.5708 0 0</pose>
+            <collision name="cam_mount_top_collision">
+                <geometry>
+                    <box>
+                        <size>3.048 0.1016 0.3048</size>
+                    </box>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>100</mu>
+                            <mu2>50</mu2>
+                        </ode>
+                    </friction>
+                </surface>
+            </collision>
+            
+            <visual name="cam_mount_top_visual">
+                <geometry>
+                    <box>
+                        <size>3.048 0.1016 0.3048</size>
+                    </box>
+                </geometry>
+            </visual>
+        </link>
+        
+        <link name="camera">
+        <pose>0 0 1.4234 1.5708 1.5708 0</pose>
+            <collision name="camera_collision">
+                <geometry>
+                    <box>
+                        <size>0.1016 0.1016 0.1016</size>
+                    </box>
+                </geometry>
+            </collision>
+            
+            <visual name="camera_visual">
+                <geometry>
+                    <box>
+                        <size>0.1016 0.1016 0.1016</size>
+                    </box>
+                </geometry>
+            </visual>
+            
+            <sensor type = "camera" name = "camera">      	
+      	<always_on>0</always_on>
+        <updateRate>20</updateRate>
 
+        <camera name="camera">
+         	<horizontal_fov>2.26893</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+          	<near>0.5</near>
+            <far>25</far>
+          </clip>
+          <distortion>
+            <k1>0.0</k1>
+            <k2>0.0</k2>
+            <k3>0.0</k3>
+            <p1>0.0</p1>
+            <p2>0.0</p2>
+            <center>0.0 0.0</center>
+          </distortion>
+        </camera>
+        
+        <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>observer/camera</cameraName>
+        <imageTopicName>image</imageTopicName>
+        <cameraInfoTopicName>observer/camera_info</cameraInfoTopicName>
+        <frameName>camera</frameName>
+        <hackBaseline>0.07</hackBaseline>
+          <distortionK1>0.0</distortionK1>
+          <distortionK2>0.0</distortionK2>
+          <distortionK3>0.0</distortionK3>
+          <distortionT1>0.0</distortionT1>
+          <distortionT2>0.0</distortionT2>
+        </plugin>
+
+      </sensor>
+        </link>
+	
         <joint name = "left_top" type="fixed">
             <parent>left_wall</parent>
             <child>top_wall</child>
