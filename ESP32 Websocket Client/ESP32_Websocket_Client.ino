@@ -3,13 +3,28 @@
 #include <WebSocketsClient.h> // WebSocket Client Library for WebSocket
 #include <ArduinoJson.h> // Arduino JSON Library
 
-const char* ssid = "UCF_Guest"; // Wifi SSID
-const char* password = ""; //Wi-FI Password
-WebSocketsClient webSocket; // Websocket client class instance
+const char* ssid = "Konstantin"; // Wifi SSID
+const char* password = "hive1234"; // Wi-FI Password
+const char* webSocketServerIP = "172.20.10.3"; // IP Address of server (Raspberry Pi)
+const int webSocketPort = 80;
+WebSocketsClient webSocket; // WebSocket client class instance
 StaticJsonDocument<100> doc; // Allocate a static JSON document
+const String WStypes[11] = {
+  "WStype_ERROR",
+  "WStype_DISCONNECTED",
+  "WStype_CONNECTED",
+  "WStype_TEXT",
+  "WStype_BIN",
+  "WStype_FRAGMENT_TEXT_START",
+  "WStype_FRAGMENT_BIN_START",
+  "WStype_FRAGMENT",
+  "WStype_FRAGMENT_FIN",
+  "WStype_PING",
+  "WStype_PONG"
+};
 
 void setup() {
-  WiFi.begin(ssid, password);
+  WiFi.begin(ssid, password); 
   Serial.begin(115200);
   Serial.print("Establishing connection");
   while (WiFi.status() != WL_CONNECTED) {
@@ -20,7 +35,7 @@ void setup() {
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP()); // Print local IP address
   // address, port, URL path
-  webSocket.begin("10.37.61.149", 80, "/");
+  webSocket.begin(webSocketServerIP, webSocketPort, "/");
   // WebSocket event handler
   webSocket.onEvent(webSocketEvent);
   // if connection failed, retry every 5s
@@ -32,7 +47,9 @@ void loop() {
 }
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-  Serial.println("Websocket Event Triggered");
+  Serial.print("Websocket Event Triggered. ");
+  Serial.print("type: ");
+  Serial.println(WStypes[type]);
   if (type == WStype_TEXT) {
     // Deserialize incoming JSON String
     DeserializationError error = deserializeJson(doc, payload); 
