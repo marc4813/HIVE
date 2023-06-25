@@ -22,7 +22,7 @@
           </visual>
         </link>
 
-      <link name="left_wheel_link">
+      <link name="lf_wheel_link">
         <pose>.09779 -0.09 -.01079 0 1.5707 1.5707</pose>
           <inertial>
                 <mass>0.45</mass>
@@ -36,7 +36,7 @@
                     <izz>0.000018375</izz>
                 </inertia>
           </inertial>
-        <collision name="left_wheel_collision">
+        <collision name="lf_wheel_collision">
           <geometry>
             <cylinder>
               <radius>.02921</radius>
@@ -55,7 +55,7 @@
           </surface>
         </collision>
         
-        <visual name="left_wheel_visual">
+        <visual name="lf_wheel_visual">
           <geometry>
             <cylinder>
               <radius>.02921</radius>
@@ -66,16 +66,16 @@
       
       </link>
 
-      <joint type="revolute" name="left_wheel_joint">
+      <joint type="revolute" name="lf_wheel_joint">
         <pose>0 0 0 -1.5707 0 0</pose>
-        <child>left_wheel_link</child>
+        <child>lf_wheel_link</child>
         <parent>base_link</parent>
         <axis>
           <xyz>0 1 0</xyz>
         </axis>
       </joint>
 
-      <link name="right_wheel_link">
+      <link name="rf_wheel_link">
         <pose>.09779 0.09 -.01079 0 1.5707 1.5707</pose>
           <inertial>
                 <mass>0.45</mass>
@@ -89,7 +89,7 @@
                     <izz>0.000018375</izz>
                 </inertia>
           </inertial>
-        <collision name="right_wheel_collision">
+        <collision name="rf_wheel_collision">
           <geometry>
             <cylinder>
               <radius>.02921</radius>
@@ -108,7 +108,7 @@
             </surface>
         </collision>
 
-        <visual name="right_wheel_visual">
+        <visual name="rf_wheel_visual">
           <geometry>
             <cylinder>
               <radius>.02921</radius>
@@ -119,34 +119,35 @@
       
       </link>
 
-      <joint type="revolute" name="right_wheel_joint">
+      <joint type="revolute" name="rf_wheel_joint">
         <pose>0 0 0 -1.5707 0 0</pose>
-        <child>right_wheel_link</child>
+        <child>rf_wheel_link</child>
         <parent>base_link</parent>
         <axis>
           <xyz>0 1 0</xyz>
         </axis>      
       </joint>
 
-      <link name="left_caster_link">
+      <link name="lb_wheel_link">
         <pose>-.09779 0.09 -.01079 0 1.5707 1.5707</pose>
           <inertial>
                 <mass>0.45</mass>
                 <pose>0 0 0 0 0 0</pose>
                 <inertia>
-                    <ixx>0.0052578</ixx>
+                    <ixx>0.00007</ixx>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
-                    <iyy>0.0052578</iyy>
+                    <iyy>0.00007</iyy>
                     <iyz>0</iyz>
-                    <izz>0.0052578</izz>
+                    <izz>0.000018375</izz>
                 </inertia>
           </inertial>
-        <collision name="left_caster_collision">
+        <collision name="lb_wheel_collision">
           <geometry>
-            <sphere>
+            <cylinder>
               <radius>.02921</radius>
-            </sphere>
+              <length>.0254</length>
+            </cylinder>
           </geometry>
           <surface>
             <friction>
@@ -159,32 +160,47 @@
             </friction>
           </surface>
         </collision>
+        
+        <visual name="lb_wheel_visual">
+          <geometry>
+            <cylinder>
+              <radius>.02921</radius>
+              <length>.0254</length>
+            </cylinder>
+          </geometry>
+        </visual>
+        
       </link>
 
-      <joint name ="left_caster_joint" type ="fixed">
+      <joint type="revolute" name="lb_wheel_joint">
+        <pose>0 0 0 -1.5707 0 0</pose>
+        <child>lb_wheel_link</child>
         <parent>base_link</parent>
-        <child>left_caster_link</child>
+        <axis>
+          <xyz>0 1 0</xyz>
+        </axis>
       </joint>
         
-      <link name="right_caster_link">
+      <link name="rb_wheel_link">
         <pose>-.09779 -0.09 -.01079 0 1.5707 1.5707</pose>
           <inertial>
                 <mass>0.45</mass>
                 <pose>0 0 0 0 0 0</pose>
                 <inertia>
-                    <ixx>0.0052578</ixx>
+                    <ixx>0.00007</ixx>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
-                    <iyy>0.0052578</iyy>
+                    <iyy>0.00007</iyy>
                     <iyz>0</iyz>
-                    <izz>0.0052578</izz>
+                    <izz>0.000018375</izz>
                 </inertia>
           </inertial>
-        <collision name="right_caster_collision">
+        <collision name="rb_wheel_collision">
           <geometry>
-            <sphere>
+            <cylinder>
               <radius>.02921</radius>
-            </sphere>
+              <length>.0254</length>
+            </cylinder>
           </geometry>
           <surface>
             <friction>
@@ -197,11 +213,24 @@
             </friction>
           </surface>
         </collision>
+        
+        <visual name="rb_wheel_visual">
+          <geometry>
+            <cylinder>
+              <radius>.02921</radius>
+              <length>.0254</length>
+            </cylinder>
+          </geometry>
+        </visual>
       </link>
 
-      <joint name ="right_caster_joint" type ="fixed">
+      <joint type="revolute" name="rb_wheel_joint">
+        <pose>0 0 0 -1.5707 0 0</pose>
+        <child>rb_wheel_link</child>
         <parent>base_link</parent>
-        <child>right_caster_link</child>
+        <axis>
+          <xyz>0 1 0</xyz>
+        </axis>
       </joint>
 
     <link name = "imu_link">
@@ -304,26 +333,12 @@
       <parent>base_link</parent>
     </joint>    
 
-    <plugin name="diff_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      <robotNamespace>agent1</robotNamespace>
-      <rosDebugLevel>debug</rosDebugLevel>
-
-      <leftJoint>left_wheel_joint</leftJoint>
-      <rightJoint>right_wheel_joint</rightJoint>
-      <wheelSeparation>0.1524</wheelSeparation>
-      <wheelDiameter>0.05842</wheelDiameter>
-      <torque>1.5</torque>
-
-      <odometrySource>world</odometrySource> 
-      <publishOdom>true</publishOdom>
-      <updateRate>100</updateRate>
-      <publishOdomTF>false</publishOdomTF>
-      <publishWheelTF>true</publishWheelTF>
-      <odometryFrame>odom</odometryFrame>
-
-      <robotBaseFrame>base_link</robotBaseFrame>
-      <topicName>cmd_vel</topicName>
-      <publishTf>true</publishTf>
+    <plugin name="object_controller" filename="libgazebo_ros_planar_move.so">
+        <commandTopic>cmd_vel</commandTopic>
+        <odometryTopic>odom</odometryTopic>
+        <odometryFrame>odom</odometryFrame>
+        <robotBaseFrame>base_link</robotBaseFrame>
+        <odometryRate>20.0</odometryRate>  
     </plugin>
   
   </model>

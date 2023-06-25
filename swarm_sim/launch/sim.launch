@@ -1,7 +1,7 @@
 <launch>
     <!-- Command line arguments -->
     <arg name="gazebo" default = "true"/>
-    <arg name="world" default = "test_env"/>
+    <arg name="world" default = "empty"/>
 
     <!-- Launch gazebo ROS -->
     <include file = "$(find gazebo_ros)/launch/empty_world.launch">
