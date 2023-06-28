@@ -1,15 +1,86 @@
+<?xml version = "1.0"?>
+
 <launch>
     <!-- Command line arguments -->
     <arg name="gazebo" default = "true"/>
-    <arg name="world" default = "empty"/>
+    <arg name="world" default = "test_env"/>
+    <arg name="agent1_desc" default = "$(find swarm_sim)/models/agent1/model.urdf.xacro"/>
+    <arg name="agent2_desc" default = "$(find swarm_sim)/models/agent2/model.urdf.xacro"/>
+    <arg name = "rviz" default = "true"/>
+    <arg name="rviz_cfg" default = "$(find swarm_sim)/rviz/map_mode.rviz"/>
 
     <!-- Launch gazebo ROS -->
     <include file = "$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="gui" value="$(arg gazebo)"/>
         <arg name ="world_name" value="$(find swarm_sim)/worlds/$(arg world).world"/>
     </include>
+    
+    <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_cfg)"/>
+    
+    <group ns="agent1">
+    	<param name = "robot_description" command="$(find xacro)/xacro --inorder $(arg agent1_desc)"/>
+    	
+    	<!-- spawn agent1 -->
+        <node pkg="gazebo_ros" type="spawn_model" name="spawn_agent1" 
+         args="-param robot_description -urdf -model agent1 -x 0.0 -y 0.0 -z 0.0 -Y 0.0" 
+         respawn="false"/>
 
-    <!-- <node pkg="gazebo_ros" type="spawn_model" name="spawn_agent1"
-            args="-param robot_description -urdf -model agent1
-                -x -34.0 -y 18.5 -z 0.0 -Y 2.168162" respawn="false"/> -->
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="tf_prefix" value="agent1" />
+        </node>    	
+     		
+     	<rosparam file = "$(find swarm_sim)/config/hector/hector.yaml"/>
+    	<node pkg="hector_mapping" type="hector_mapping" name="hector_slam" output="screen">
+        	<remap from="scan" to="laserscan"/>
+    	</node>
+
+  		
+        <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher"/>
+     		
+     	<!-- Launch move_base -->
+    	<node pkg = "move_base" type = "move_base" respawn = "false" name = "move_base" output = "screen">
+        	<rosparam file = "$(find swarm_sim)/config/costmap_params/costmap_common_params.yaml" command = "load" ns = "global_costmap" />
+        	<rosparam file = "$(find swarm_sim)/config/costmap_params/costmap_common_params.yaml" command = "load" ns = "local_costmap"/>
+        	<rosparam file = "$(find swarm_sim)/config/costmap_params/local_costmap_params.yaml" command = "load" />
+        	<rosparam file = "$(find swarm_sim)/config/costmap_params/global_costmap_params.yaml" command = "load" />
+        	<rosparam file = "$(find swarm_sim)/config/costmap_params/base_local_planner_params.yaml" command = "load" />
+        	<rosparam file = "$(find swarm_sim)/config/costmap_params/global_planner_params.yaml" command="load"/>
+        	
+        	<remap from="agent1/move_base_simple/goal" to="move_base_simple/goal"/>
+    	</node>
+    	
+    	<node pkg="explore_lite" type="explore" respawn="false" name="explore" output="screen">
+  		<param name="robot_base_frame" value="agent1/base_link"/>
+  		<param name="costmap_topic" value="map"/>
+  		<param name="costmap_updates_topic" value="move_base/global_costmap/map_updates"/>
+  		<param name="visualize" value="true"/>
+  		<param name="planner_frequency" value="0.33"/>
+  		<param name="progress_timeout" value="30.0"/>
+  		<param name="potential_scale" value="3.0"/>
+  		<param name="orientation_scale" value="0.0"/>
+  		<param name="gain_scale" value="1.0"/>
+  		<param name="transform_tolerance" value="0.3"/>
+ 		<param name="min_frontier_size" value="0.75"/>
+	</node>
+        
+    </group>
+    
+   <!-- 
+   <group ns="agent2">
+    	<param name = "robot_description" command="$(find xacro)/xacro inorder $(arg agent2_desc)"/>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="tf_prefix" value="agent2" />
+        </node>    	
+    	
+        <node pkg="gazebo_ros" type="spawn_model" name="spawn_agent2" 
+         args="-param robot_description -urdf -model agent2 -x 0.0 -y -1.5 -z 0.0 -Y 0.0" 
+         respawn="false"/>
+         
+        <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher"/>
+        
+    </group>
+    -->
+
+
 </launch>

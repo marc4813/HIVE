@@ -21,7 +21,42 @@
             </geometry>
           </visual>
         </link>
-
+        
+      <link name = "ar_tag">
+      	<pose>0 0 0.0205 0 0 0</pose>
+      	<collision name ="ar_collision">
+      		<geometry>
+      			<box>
+      			<size>0.127 0.127 0.001</size>
+      			</box>
+      		</geometry>
+      	</collision>
+      	
+      	<visual name ="ar_visual">
+      		<geometry>
+      			<box>
+      			<size>0.127 0.127 0.001</size>
+      			</box>
+      		</geometry>
+      		<material>
+      			<script>
+      				<uri>model://agent1/materials/scripts</uri>
+      				<uri>model://agent1/materials/textures</uri>
+      				<name>tag1</name>
+      			</script>
+      		</material>
+	</visual>
+      </link>
+      
+      <joint type="fixed" name="ar_tag_joint">
+        <pose>0 0 0 0.0205 0 0</pose>
+        <child>ar_tag</child>
+        <parent>base_link</parent>
+        <axis>
+          <xyz>0 1 0</xyz>
+        </axis>
+      </joint>	
+      
       <link name="lf_wheel_link">
         <pose>.09779 -0.09 -.01079 0 1.5707 1.5707</pose>
           <inertial>
@@ -266,6 +301,60 @@
     <joint name ="imu_joint" type ="fixed">
       <parent>base_link</parent>
       <child>imu_link</child>
+    </joint>
+    
+     <link name = "lidar_link">
+      <pose>0 0 0.0481 0 0 3.14</pose>
+        <collision name = "lidar_collision">
+          <geometry> 
+            <box>
+              <size>0.0508 0.0508 0.0762</size>
+            </box>
+          </geometry>
+        </collision>
+
+        <visual name = "lidar_visual">
+          <geometry> 
+            <box>
+              <size>0.0508 0.0508 0.0762</size>
+            </box>
+          </geometry>
+        </visual>
+
+        <sensor type = "ray" name = "lidar_sensor">
+          <visualize>true</visualize>
+          <updateRate>40</updateRate>
+          <ray>
+            <scan>
+              <horizontal>
+                <samples>1080</samples>
+                <resolution>0.25</resolution>
+                <min_angle>-2.3561945</min_angle>
+                <max_angle>2.3561945</max_angle>
+              </horizontal>
+            </scan>
+            <range> 
+              <min>0.10</min>
+              <max>30</max>
+              <resolution>0.01</resolution>
+            </range>
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </ray>
+          
+          <plugin name = "lidar_plugin" filename = "libgazebo_ros_laser.so">
+            <topicName>agent1/laserscan</topicName>
+            <frameName>lidar_link</frameName>
+          </plugin>
+        </sensor>
+    </link>
+
+    <joint name = "lidar_joint" type = "fixed">
+      <child>lidar_link</child>
+      <parent>base_link</parent>
     </joint>
     
     <link name = "camera_link">

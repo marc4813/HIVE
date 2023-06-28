@@ -185,7 +185,7 @@
                 </geometry>
             </visual>
             
-            <sensor type = "camera" name = "camera">      	
+        <sensor type = "depth" name = "camera">      	
       	<always_on>0</always_on>
         <updateRate>20</updateRate>
 
@@ -209,23 +209,32 @@
           </distortion>
         </camera>
         
-        <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
         <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
-        <cameraName>observer/camera</cameraName>
-        <imageTopicName>image</imageTopicName>
+        <cameraName>camera</cameraName>
+        
+        <baseline>0.05</baseline>
+        <pointCloudCutoff>0.05</pointCloudCutoff>
+        <pointCloudCutoffMax>5</pointCloudCutoffMax>
+        
+        <imageTopicName>observer/image</imageTopicName>
+        <depthImageTopicName>observer/depth/image</depthImageTopicName>       
         <cameraInfoTopicName>observer/camera_info</cameraInfoTopicName>
-        <frameName>camera</frameName>
-        <hackBaseline>0.07</hackBaseline>
-          <distortionK1>0.0</distortionK1>
-          <distortionK2>0.0</distortionK2>
-          <distortionK3>0.0</distortionK3>
-          <distortionT1>0.0</distortionT1>
-          <distortionT2>0.0</distortionT2>
-        </plugin>
+        <depthImageCameraInfoTopicName>observer/depth/camera_info</depthImageCameraInfoTopicName>
+        <pointCloudTopicName>observer/point_cloud/cloud_registered</pointCloudTopicName>
 
-      </sensor>
+        <frameName>camera</frameName>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+        
+        </plugin>
+        </sensor>
         </link>
+
 	
         <joint name = "left_top" type="fixed">
             <parent>left_wall</parent>
