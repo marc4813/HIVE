@@ -1,18 +1,14 @@
 const ws = require("ws");
 const roslib = require("roslib");
-const https = require("https");
-const fs = require("fs");
 
-enum MessageTypes{
-    geometry,
-    laserscan
-}
+const MessageTypes = {
+    geometry: 1,
+    laserscan: 2
+};
 
 const ros = new roslib.Ros({
-    url: "ws://localhost:9090"
+    url: "ws://0.0.0.0:9090"
 });
-
-//Install wireshark. And apply the parsing changes to the arduino code, as well ssl.
 
 ros.on("connection", ()=>{
     console.log("connected to ros");
@@ -24,43 +20,38 @@ ros.on("close", ()=>{
 
 const clients = new Array();
 
-/*const httpsServer = new https.createServer({
-    key: fs.readFileSync("key.pem"),
-    cert: fs.readFileSync("cert.pem")
-});*/
-
-const wss = new ws.Server({port:80});
+const server = new ws.Server({port: 80});
 
 console.log("server started");
 
-wss.on("connection", (client)=>{
-    client.id = clients.length; //adds variance, so if we have 6 agents, and remove 2nd, the replacement agent, will become agent 6.
+server.on("connection", (client)=>{
+    client.id = clients.length+1;
+
+    client.settimeout(()=>{
+
+    });
 
     clients.push(client);
 
     console.log(`client ${client.id} connected`);
 
-    const listenerGeometry = new roslib.Topic({
+    const incomingGeometry = new roslib.Topic({
         ros: ros,
-        name: "/agent" + client.id+1+"/cmd_vel", //0-based indexing for ids
+        name: "/agent"+client.id+"/in_cmd_vel",
         messageType: "geometry_msgs/Twist"
     });
 
-    const listenerPresence = new roslib.Topic({ //this is questionable
+    const outgoingGeometry = new roslib.Topic({
         ros: ros,
-        name: "/presence",
+        name: "/agent"+client.id+"/out_cmd_vel",
         messageType: "std_msgs/String"
     });
 
-    listenerPresence.publish(new roslib.Message({
-        data: client.id,
-        active: true
-    }));
-
-    listenerGeometry.subscribe((data)=>{
+    incomingGeometry.subscribe((data)=>{
         const message = {
+            type: MessageTypes.geometry,
             linear: data.linear,
-            angualr: data.angular
+            angular: data.angular
         }
 
         client.send(JSON.stringify(message));
@@ -71,33 +62,33 @@ wss.on("connection", (client)=>{
 
         console.log(parsed);
 
+        const message = new roslib.Message({
+            data: JSON.stringify({
+                agent: client.id,
+                status: parsed.data
+            })
+        });
+
         switch(parsed.type){
             case MessageTypes.geometry:
-                listenerGeometry.publish(new roslib.Message({
-                    linear: parsed.linear,
-                    angular: parsed.angular
-                }));
-
+                outgoingGeometry.publish(message);
                 break;
+
+            case MessageTypes.laserscan:
+                break;
+                
+            default:
+                console.log("unkown message type");
         }
     });
 
     client.on("close", ()=>{
-        clients.splice(client.id, 1);
+        clients.splice(client.id-1, 1)
 
-        //Updates client IDs on the side of the router, and will ask the server to do the same.
-        for(let i:number = client.id; i < clients.length; i++){
+        for(let i:number = client.id-1; i < clients.length; i++){
             clients[i].id--;
         }
 
-        listenerPresence.publish(new roslib.Message({
-            data: client.id,
-            active: false //agent is no longer available.
-        }));
-    
-        
         console.log(`client ${client.id} disconnected`);
     });
 });
-
-//httpsServer.listen(8080); //try 443
