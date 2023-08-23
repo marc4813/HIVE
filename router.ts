@@ -3,7 +3,8 @@ const roslib = require("roslib");
 
 const MessageTypes = {
     geometry: 1,
-    laserscan: 2
+    laserscan: 2,
+    status: 3
 };
 
 const ros = new roslib.Ros({
@@ -25,15 +26,28 @@ const server = new ws.Server({port: 80});
 console.log("server started");
 
 server.on("connection", (client)=>{
+    let isActive:boolean = true;
+
     client.id = clients.length+1;
-
-    client.settimeout(()=>{
-
-    });
 
     clients.push(client);
 
     console.log(`client ${client.id} connected`);
+
+    const interval = setInterval(()=>{
+        if(isActive){
+            console.log(true);
+            isActive = false;
+
+            client.send(JSON.stringify({
+                type: MessageTypes.status
+            }));
+        }
+        else{
+            client.close();
+        }
+        
+    }, 5000);
 
     const incomingGeometry = new roslib.Topic({
         ros: ros,
@@ -76,6 +90,10 @@ server.on("connection", (client)=>{
 
             case MessageTypes.laserscan:
                 break;
+            
+            case MessageTypes.status:
+                isActive = true;
+                break;
                 
             default:
                 console.log("unkown message type");
@@ -83,12 +101,14 @@ server.on("connection", (client)=>{
     });
 
     client.on("close", ()=>{
-        clients.splice(client.id-1, 1)
+        console.log(`client ${client.id} disconnected`);
 
+        clearInterval(interval);
+
+        clients.splice(client.id-1, 1);
+        
         for(let i:number = client.id-1; i < clients.length; i++){
             clients[i].id--;
         }
-
-        console.log(`client ${client.id} disconnected`);
     });
 });
