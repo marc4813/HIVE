@@ -1,8 +1,8 @@
 
-footprint: [[0.26, 0.16], [0.26, -0.16], [-0.26, -0.16], [-0.26, 0.16]]
+footprint: [[0.22, 0.25], [0.22, -0.25], [-0.22, -0.25], [-0.22, 0.25]]
 
 #robot_radius: ir_of_robot
-inflation_radius: 0.04
+inflation_radius: 0.02
 
 plugins:
   - {name: obstacles_2d,      type: "costmap_2d::ObstacleLayer"}
@@ -15,7 +15,7 @@ obstacles_2d:
   combination_method:     1      # 1=max, 0=override
   track_unknown_space:    true   # default space is unknown
   obstacle_range:         5.0    # meters
-  raytrace_range:         5.1
+  raytrace_range:         5.01
   observation_sources: laserscan
   laserscan:
     data_type: LaserScan
@@ -26,4 +26,4 @@ obstacles_2d:
     marking: true
     clearing: true
     max_obstacle_height: 2.0
-    min_obstacle_height: 0.008
+    min_obstacle_height: -0.4

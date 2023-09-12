@@ -5,26 +5,27 @@
     <!-- physical parameters of robot, all in SI (meters, kg) -->
     <!-- base dimensions -->
     <xacro:property name="base_mass" value="2.26796" />
-    <xacro:property name="base_width" value="0.1524" />     <!-- width=y -->
-    <xacro:property name="base_length" value="0.254" />    <!-- length=x -->
+    <xacro:property name="base_width" value="0.381" />     <!-- width=y -->
+    <xacro:property name="base_length" value="0.381" />    <!-- length=x -->
     <xacro:property name="base_height" value="0.04" />     <!-- height=z -->
     <!-- wheel properties -->
-    <xacro:property name="wheel_radius" value="0.02921" />
-    <xacro:property name="wheel_width" value="0.0254" />
+    <xacro:property name="wheel_radius" value="0.05" />
+    <xacro:property name="wheel_width" value="0.045" />
     <!-- differential properties -->
     <xacro:property name="wheel_mass" value="0.45" />
-    <xacro:property name="wheelbase" value="0.19668" />
-    <xacro:property name="track_width" value="0.18" />
+    <xacro:property name="wheelbase" value="0.3048" />
+    <xacro:property name="track_width" value="0.3572" />
     <xacro:property name="wheel_offset_x" value="${wheelbase / 2}" />
-    <xacro:property name="wheel_offset_y" value="${track_width / 2}" />
+    <xacro:property name="wheel_offset_y" value="${(base_width / 2) + (wheel_width / 2)}" />
     <xacro:property name="wheel_offset_z" value="-0.01079" />
     <!-- lidar properties -->
     <xacro:property name="lidar_mass" value="0.830" />
-    <xacro:property name="lidar_height" value="0.0762" />
-    <xacro:property name="lidar_width" value="0.0508" />
+    <xacro:property name="lidar_height" value="0.0408" />
+    <xacro:property name="lidar_length" value="0.096" />
+    <xacro:property name="lidar_width" value="0.0583" />
     <xacro:property name="lidar_offset_x" value="0.0" />
     <xacro:property name="lidar_offset_y" value="0.0" />
-    <xacro:property name="lidar_offset_z" value="0.0481" />
+    <xacro:property name="lidar_offset_z" value="-${(lidar_height/2) + (base_height/2)}" />
     <!-- imu properties -->
     <xacro:property name="imu_offset_x" value="0.0" />
     <xacro:property name="imu_offset_y" value="0.0" />
@@ -65,7 +66,7 @@
 
     
     <!-- lidar link -->
-    <xacro:box_total name="laser" mass="${lidar_mass}" width="${lidar_width}" height="${lidar_height}" length="${lidar_width}"/>
+    <xacro:box_total name="laser" mass="${lidar_mass}" width="${lidar_width}" height="${lidar_height}" length="${lidar_length}"/>
     <joint name="laser_joint" type="fixed">
         <gazebo reference="laser_joint">
         </gazebo>

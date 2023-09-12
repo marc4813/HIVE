@@ -8,7 +8,7 @@
     <arg name="agent2_desc" default = "$(find swarm_sim)/models/agent2/model.urdf.xacro"/>
     <arg name = "rviz" default = "false"/>
     <arg name="rviz_cfg" default = "$(find swarm_sim)/rviz/map_mode.rviz"/>
-    <arg name="server_en" default="false">
+    <arg name="server_en" default="false"/>
     
     <!-- Launch websocket server -->
    <include file = "$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
