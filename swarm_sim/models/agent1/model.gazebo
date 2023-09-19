@@ -11,11 +11,11 @@
     <gazebo>
         <!-- mechanum drive plugin; publishes odom frame-->
         <plugin name="robot_controller" filename="libgazebo_ros_planar_move.so">
-        	<commandTopic>cmd_vel</commandTopic>
+        	<commandTopic>cmd_vel_wheel</commandTopic>
         	<odometryTopic>wheel_odom</odometryTopic>
-        	<publishOdom>false</publishOdom> 
+        	<publishOdom>true</publishOdom> 
         	<robotBaseFrame>agent1/base_link</robotBaseFrame>
-        	<odometryRate>0.0</odometryRate>  
+        	<odometryRate>1.0</odometryRate>  
     	</plugin>
     </gazebo>
 
@@ -39,24 +39,24 @@
             <ray>
                 <scan>
                     <horizontal>
-                        <samples>1080</samples>
+                        <samples>3000</samples>
                         <resolution>0.72</resolution>
-                        <min_angle>-2.3561945</min_angle>
-                        <max_angle>2.3561945</max_angle>
+                        <min_angle>-6.28319</min_angle>
+                        <max_angle>6.28319</max_angle>
                     </horizontal>
                 </scan>
                 <range>
-                    <min>0.3</min>
+                    <min>0.08</min>
                     <max>8</max>
                     <resolution>0.01</resolution>
                 </range>
                 <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>
-                    <stddev>0.01</stddev>
+                    <stddev>0.02</stddev>
                 </noise>
             </ray>
-            <visualize>true</visualize>
+            <visualize>false</visualize>
             <plugin name="hokuyo_plugin" filename="libgazebo_ros_laser.so">
                 <robotNamespace>${robot}</robotNamespace>
                 <topicName>/agent1/laserscan</topicName>
