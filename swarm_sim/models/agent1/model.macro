@@ -25,9 +25,9 @@
             <inertial name="${name}_inertial">
                 <mass value="${mass}" />
                 <!-- 3D inertia tensor from: https://en.wikipedia.org/wiki/List_of_moments_of_inertia -->
-                <inertia ixx="${mass*(height*height+width*width)/12}" ixy="0.0" ixz="0.0"
-                        iyy="${mass*(height*height+length*length)/12}" iyz="0.0"
-                        izz="${mass*(length*length+width*width)/12}" />
+                <inertia ixx="${(mass*((height*height)+(width*width)))/12}" ixy="0.0" ixz="0.0"
+                        iyy="${(mass*((height*height)+(length*length)))/12}" iyz="0.0"
+                        izz="${(mass*((length*length)+(width*width)))/12}" />
             </inertial>
         </link>
     </xacro:macro>
@@ -156,7 +156,7 @@
     	    <child  link="${name}"/>
     	    <origin xyz="${(x_offset*reflect_x)} ${(y_offset*reflect_y)} ${z_offset}" />
     	    <axis xyz="0 0 1"/>
-    	    <limit lower="0" upper="1.57" effort="100" velocity="0.2"/>
+    	    <limit lower="0" upper="1.57" effort="50" velocity="0.01"/>
         </joint>
     </xacro:macro>
     
@@ -168,7 +168,7 @@
     	    <child  link="${name}"/>
     	    <origin xyz="${(x_offset*reflect_x)} ${(y_offset*reflect_y)} ${z_offset}" />
     	    <axis xyz="0 0 1"/>
-    	    <limit lower="-1.57" upper="0" effort="100" velocity="0.2"/>
+    	    <limit lower="-1.57" upper="0" effort="50" velocity="0.01"/>
         </joint>
     </xacro:macro>
 
@@ -181,6 +181,19 @@
             <origin xyz="${(x_offset*reflect_x)} ${(y_offset*reflect_y)} ${z_offset}" />
             <!-- <axis xyz="0 1 0"/> -->
         </joint>
+    </xacro:macro>
+    
+    <xacro:macro name="transmission" params="name">
+    	<transmission name="${name}_tran">
+    	    <type>transmission_interface/SimpleTransmission</type>
+    	    <joint name="${name}_joint">
+    	        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    	    </joint>
+  	    <actuator name="${name}_motor1">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+  	</transmission>
     </xacro:macro>
 
 </robot>

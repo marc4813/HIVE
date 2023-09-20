@@ -84,32 +84,38 @@
     <xacro:wheel name="back_right_wheel" wheel_radius="${wheel_radius}" wheel_width="${wheel_width}" wheel_mass="${wheel_mass}"/>
     <xacro:wheel_joint name="back_right_wheel" x_offset="${wheel_offset_x}" y_offset="${wheel_offset_y}" z_offset="${wheel_offset_z}" reflect_x="-1" reflect_y="-1"/>
     
-    <xacro:gripper_total name="gripper_1a" mass="0.05" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="1.5708" xyz=" ${gripper_a_offset_x} -${gripper_a_offset_y} ${gripper_a_offset_z}"/>
+    <xacro:gripper_total name="gripper_1a" mass="0.4" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="1.5708" xyz=" ${gripper_a_offset_x} -${gripper_a_offset_y} ${gripper_a_offset_z}"/>
     <xacro:gripper_positive_joint name="gripper_1a" x_offset="${base_length/2}" y_offset="${base_width/2}" z_offset="0" reflect_x="1" reflect_y="1"/>
     
-    <xacro:gripper_total name="gripper_1b" mass="0.05" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="0" xyz=" -${gripper_b_offset_x} ${gripper_b_offset_y} ${gripper_b_offset_z}"/>
+    <xacro:gripper_total name="gripper_1b" mass="0.4" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="0" xyz=" -${gripper_b_offset_x} ${gripper_b_offset_y} ${gripper_b_offset_z}"/>
     <xacro:gripper_negative_joint name="gripper_1b" x_offset="${base_length/2}" y_offset="${base_width/2}" z_offset="0" reflect_x="1" reflect_y="1"/>
     
-    <xacro:gripper_total name="gripper_2a" mass="0.05" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="1.5708" xyz=" -${gripper_a_offset_x} ${gripper_a_offset_y} ${gripper_a_offset_z}"/>
+    <xacro:gripper_total name="gripper_2a" mass="0.4" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="1.5708" xyz=" -${gripper_a_offset_x} ${gripper_a_offset_y} ${gripper_a_offset_z}"/>
     <xacro:gripper_negative_joint name="gripper_2a" x_offset="${base_length/2}" y_offset="${base_width/2}" z_offset="0" reflect_x="1" reflect_y="-1"/>
     
-    <xacro:gripper_total name="gripper_2b" mass="0.05" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="0" xyz=" -${gripper_b_offset_x} ${gripper_b_offset_y} ${gripper_b_offset_z}"/>
+    <xacro:gripper_total name="gripper_2b" mass="0.4" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="0" xyz=" -${gripper_b_offset_x} ${gripper_b_offset_y} ${gripper_b_offset_z}"/>
     <xacro:gripper_positive_joint name="gripper_2b" x_offset="${base_length/2}" y_offset="${base_width/2}" z_offset="0" reflect_x="1" reflect_y="-1"/>
     
-    <xacro:gripper_total name="gripper_3a" mass="0.05" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="1.5708" xyz=" ${gripper_a_offset_x} -${gripper_a_offset_y} ${gripper_a_offset_z}"/>S
+    <xacro:gripper_total name="gripper_3a" mass="0.4" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="1.5708" xyz=" ${gripper_a_offset_x} -${gripper_a_offset_y} ${gripper_a_offset_z}"/>S
     <xacro:gripper_negative_joint name="gripper_3a" x_offset="${base_length/2}" y_offset="${base_width/2}" z_offset="0" reflect_x="-1" reflect_y="1"/>
     
-    <xacro:gripper_total name="gripper_3b" mass="0.05" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="0" xyz=" ${gripper_b_offset_x} ${gripper_b_offset_y} ${gripper_b_offset_z}"/>
+    <xacro:gripper_total name="gripper_3b" mass="0.4" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="0" xyz=" ${gripper_b_offset_x} ${gripper_b_offset_y} ${gripper_b_offset_z}"/>
     <xacro:gripper_positive_joint name="gripper_3b" x_offset="${base_length/2}" y_offset="${base_width/2}" z_offset="0" reflect_x="-1" reflect_y="1"/>
     
-    <xacro:gripper_total name="gripper_4a" mass="0.05" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="1.5708" xyz=" ${gripper_a_offset_x} ${gripper_a_offset_y} ${gripper_a_offset_z}"/>
+    <xacro:gripper_total name="gripper_4a" mass="0.4" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="1.5708" xyz=" ${gripper_a_offset_x} ${gripper_a_offset_y} ${gripper_a_offset_z}"/>
     <xacro:gripper_positive_joint name="gripper_4a" x_offset="${base_length/2}" y_offset="${base_width/2}" z_offset="0" reflect_x="-1" reflect_y="-1"/>
     
-    <xacro:gripper_total name="gripper_4b" mass="0.05" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="0" xyz=" ${gripper_b_offset_x} ${gripper_b_offset_y} ${gripper_b_offset_z}"/>
+    <xacro:gripper_total name="gripper_4b" mass="0.4" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="0" xyz=" ${gripper_b_offset_x} ${gripper_b_offset_y} ${gripper_b_offset_z}"/>
     <xacro:gripper_negative_joint name="gripper_4b" x_offset="${base_length/2}" y_offset="${base_width/2}" z_offset="0" reflect_x="-1" reflect_y="-1"/>
     
-
-
+    <xacro:transmission name="gripper_1a"/>
+    <xacro:transmission name="gripper_1b"/>
+    <xacro:transmission name="gripper_2a"/>
+    <xacro:transmission name="gripper_2b"/>
+    <xacro:transmission name="gripper_3a"/>
+    <xacro:transmission name="gripper_3b"/>
+    <xacro:transmission name="gripper_4a"/>
+    <xacro:transmission name="gripper_4b"/>
     
     <!-- lidar link -->
     <xacro:box_total name="laser" mass="${lidar_mass}" width="${lidar_width}" height="${lidar_height}" length="${lidar_length}"/>
