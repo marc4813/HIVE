@@ -9,9 +9,6 @@
     <arg name = "rviz" default = "false"/>
     <arg name="rviz_cfg" default = "$(find swarm_sim)/rviz/map_mode.rviz"/>
     <arg name="server_en" default="false"/>
-    
-    <!-- Launch websocket server -->
-   <include file = "$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
    
     <!-- Launch gazebo ROS -->
     <include file = "$(find gazebo_ros)/launch/empty_world.launch">
@@ -19,9 +16,10 @@
         <arg name ="world_name" value="$(find swarm_sim)/worlds/$(arg world).world"/>
     </include>
     
-    <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_cfg)"/>
-    
     <group ns="agent1">
+    
+    	<node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_cfg)"/>
+    	
     	<param name = "robot_description" command="$(find xacro)/xacro --inorder $(arg agent1_desc)"/>
     	
     	<!-- spawn agent1 -->
@@ -32,28 +30,14 @@
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
             <param name="tf_prefix" value="agent1" />
         </node>    	
-     		
-     	<rosparam file = "$(find swarm_sim)/config/hector/hector.yaml"/>
-    	<node pkg="hector_mapping" type="hector_mapping" name="hector_slam" output="screen">
-        	<remap from="scan" to="laserscan"/>
-    	</node>
   		
         <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher"/>
         
         <include file="$(find agent_control)/launch/agent_control.launch"/>
+        
+        <include file="$(find agent_nav)/launch/nav.launch"/>
+        
      		
-     	<!-- Launch move_base -->
-    	<node pkg = "move_base" type = "move_base" respawn = "false" name = "move_base" output = "screen">
-        	<rosparam file = "$(find swarm_sim)/config/costmap_params/costmap_common_params.yaml" command = "load" ns = "global_costmap" />
-        	<rosparam file = "$(find swarm_sim)/config/costmap_params/costmap_common_params.yaml" command = "load" ns = "local_costmap"/>
-        	<rosparam file = "$(find swarm_sim)/config/costmap_params/local_costmap_params.yaml" command = "load" />
-        	<rosparam file = "$(find swarm_sim)/config/costmap_params/global_costmap_params.yaml" command = "load" />
-        	<rosparam file = "$(find swarm_sim)/config/costmap_params/base_local_planner_params.yaml" command = "load" />
-        	<rosparam file = "$(find swarm_sim)/config/costmap_params/global_planner_params.yaml" command="load"/>
-        	
-        	<remap from="cmd_vel" to="cmd_vel_wheel"/>
-        	<remap from="agent1/move_base_simple/goal" to="move_base_simple/goal"/>
-    	</node>
     	<!--
     	<node pkg="explore_lite" type="explore" respawn="false" name="explore" output="screen">
   		<param name="robot_base_frame" value="agent1/base_link"/>

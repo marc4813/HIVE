@@ -1,0 +1,82 @@
+#! /usr/bin/python3
+
+import rospy
+from  rospkg import RosPack
+import roslaunch
+from std_msgs.msg import Empty
+import subprocess 
+
+class OnButton():
+
+    def __init__(self):
+        self.started_sim = False
+        self.start_sim_cmd = False
+        self.stop_sim_cmd = False
+
+        # Subscribe to the "start_sim" topic
+        self.start_sim_sub = rospy.Subscriber("start_sim", Empty, self.start_sim_callback)
+    
+        # Subscribe to the "stop_sim" topic
+        self.stop_sim_sub = rospy.Subscriber("stop_sim", Empty, self.stop_sim_callback)   
+
+    def start_rosbridge_server(self):
+        # Start the rosbridge_server using subprocess
+        try:
+            subprocess.Popen(["rosrun", "rosbridge_server", "rosbridge_websocket"])
+        except Exception as e:
+            print("Error starting rosbridge_server:", str(e))
+
+    def stop_sim_callback(self, msg):
+        # Callback function to kill swarm_sim
+        rospy.loginfo("Recieved 'stop_sim' message, halting sim.")
+        self.stop_sim_cmd = True
+    
+
+    def start_sim_callback(self, msg):
+        # Callback function to start the swarm_sim package
+        rospy.loginfo("Received 'start_sim' message, launching swarm_sim.")
+        self.start_sim_cmd = True
+    
+    def start_stack_callback(msg):
+        # Callback function to start the navigation stack(s)
+        pass
+
+    def stop_stack_callback(msg):
+        # Callback function to stop the navigation stack(s)
+        pass
+
+def main():
+
+    rospy.init_node("stack_controller")
+    
+    button = OnButton()
+    rp = RosPack()
+    
+    # Start rosbridge server
+    button.start_rosbridge_server()
+
+    # Define roslaunch interfaces for the stacks we want to start/stop. 
+    sim_uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+    roslaunch.configure_logging(sim_uuid)
+    sim_launch = roslaunch.parent.ROSLaunchParent(sim_uuid, [rp.get_path('swarm_sim') + '/launch/sim.launch'])
+    
+    
+   
+    while not rospy.is_shutdown():
+    
+        if not button.started_sim and button.start_sim_cmd:
+    	    sim_launch.start()
+    	    button.start_sim_cmd = False
+    	    button.started_sim = True
+    
+        if button.started_sim and button.stop_sim_cmd:
+            sim_launch.shutdown()
+            sim_uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+            roslaunch.configure_logging(sim_uuid)
+            sim_launch = roslaunch.parent.ROSLaunchParent(sim_uuid, [rp.get_path('swarm_sim') + '/launch/sim.launch'])
+            button.stop_sim_cmd = False
+            button.started_sim = False
+
+
+if __name__ == "__main__":
+    main()
