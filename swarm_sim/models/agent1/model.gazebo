@@ -11,11 +11,12 @@
     <gazebo>
         <!-- mechanum drive plugin; publishes odom frame-->
         <plugin name="robot_controller" filename="libgazebo_ros_planar_move.so">
-        	<commandTopic>cmd_vel_wheel</commandTopic>
-        	<odometryTopic>wheel_odom</odometryTopic>
+        	<commandTopic>cmd_vel</commandTopic>
+        	<odometryTopic>odom</odometryTopic>
         	<publishOdom>true</publishOdom> 
         	<robotBaseFrame>agent1/base_link</robotBaseFrame>
-        	<odometryRate>1.0</odometryRate>  
+        	<odometryFrame>agent1/odom</odometryFrame>
+        	<odometryRate>6.0</odometryRate>  
     	</plugin>
     </gazebo>
 

@@ -1,7 +1,7 @@
 hector_slam:
   base_frame: agent1/base_link
   map_frame: map
-  odom_frame: agent1/base_link
+  odom_frame: agent1/odom
   map_resolution: 0.025
   map_size: 1024
   map_start_x: 0.5
@@ -20,5 +20,5 @@ hector_slam:
   output_timing: false
   pub_odometry: false
   scan_subscriber_queue_size: 5
-  pub_map_scanmatch_transform: true
+  pub_map_scanmatch_transform: false
   tf_map_scanmatch_transform_frame_name: scanmatcher_frame

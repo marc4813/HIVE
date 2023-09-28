@@ -2,7 +2,7 @@
 <package format="2">
   <name>agent_nav</name>
   <version>0.0.0</version>
-  <description>The agent1_nav package</description>
+  <description>The agent_nav package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

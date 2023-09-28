@@ -18,7 +18,6 @@
         	<rosparam file = "$(find agent_nav)/config/costmap_params/base_local_planner_params.yaml" command = "load" />
         	<rosparam file = "$(find agent_nav)/config/costmap_params/global_planner_params.yaml" command="load"/>
         	
-        	<remap from="cmd_vel" to="cmd_vel_wheel"/>
     	</node>
     	
 </launch>
