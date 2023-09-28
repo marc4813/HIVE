@@ -1,0 +1,15 @@
+{
+  "name": "sd2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "router.js",
+  "scripts": {
+    "start": "tsc && node router.js",
+    "clean": "del *.js *.map"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.6.3"
+  }
+}
