@@ -77,7 +77,7 @@ export class Scanner{
         return tokens;
     }
 
-    public static getIwTokens = (data:string[]):Token[] =>{
+    public static getFreqTokens = (data:string[]):Token[] =>{
         let tokens:Token[] = [];
         let buffer:string = "";
 
@@ -122,7 +122,7 @@ export class Scanner{
         return tokens;
     }
 
-    public static getIfTokens = (data:string[]):Token[] =>{
+    public static getNetTokens = (data:string[]):Token[] =>{
         let tokens:Token[] = [];
         let buffer:string = "";
         
@@ -132,7 +132,7 @@ export class Scanner{
 
             if(type == "alpha" || type == "digit" || sym == '.'){
                 if(type == "digit"){
-                    if(buffer == "eth" || buffer == "wlan" || buffer == "uap"){
+                    if(buffer == "wlan" || buffer == "uap"){
                         tokens.push(new Token(buffer));
 
                         buffer = "";

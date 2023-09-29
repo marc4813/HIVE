@@ -1,6 +1,7 @@
 const subProc = require("child_process");
 const fs = require("fs"); //add input for logging stuff.
 import {Scanner} from './scanner';
+import {startServer} from "./server";
 
 export class Token{
     name:string; // wlan/eth, etc. VERSION
@@ -10,7 +11,7 @@ export class Token{
 
     constructor(name:string){
         this.name = name;
-        this.data = "";
+        this.data = ""; //will it be initialized by default.
         this.id = -1;
         this.freq = -1;
     }
@@ -24,9 +25,8 @@ export enum ErrorType{ //export this, so ros and websocket can use that.
     sudo = 1,
     os,
     ifconfig,
-    hotspotCustom,
-    hotspotNet,
     net,
+    hotspot,
     none
 }
 
@@ -43,8 +43,11 @@ export let logError = (error:ErrorType):void =>{
         case ErrorType.ifconfig:
             console.log("ifconfig Installed.");
             break;
-        default:
+        case ErrorType.net:
             console.log("Internet Connection");
+            break;
+        default:
+            console.log("2.4 GHz Hotspot");
     }
 }
 
@@ -66,15 +69,15 @@ let runCommand = (command:string, options?:string[]):string =>{
     return res;
 };
 
-let createFreqMap = (tokens:Token[]):Map<string, number> =>{
-    let freqMap:Map<string, number> = new Map<string, number>();
+let createFreqMap = (tokens:Token[]):Map<string, boolean> =>{
+    let freqMap:Map<string, boolean> = new Map<string, boolean>();
 
     for(let next:number = 0; next < tokens.length; ++next){
         let nextToken:Token = tokens[next];
 
         if(nextToken.name == "wlan" || nextToken.name == "uap"){
             if(nextToken.freq == 2.4){
-                freqMap[nextToken.toString()] = nextToken.freq;
+                freqMap[nextToken.toString()] = true;
             }
         }
     }
@@ -82,30 +85,18 @@ let createFreqMap = (tokens:Token[]):Map<string, number> =>{
     return freqMap;
 }
 
-let createNetMap = (tokens:Token[], freqMap:Map<string, number>):Map<string, Token[]> =>{
+let createNetMap = (tokens:Token[], freqMap:Map<string, boolean>):Map<string, Token[]> =>{
     let netMap:Map<string, Token[]> = new Map<string, Token[]>();
 
     for(let next:number = 0; next < tokens.length; ++next){
-        let canAdd:boolean = true;
         let nextToken:Token = tokens[next];
 
         if(nextToken.data){
-            let completeName:string = nextToken.toString();
-
-            if(!netMap.has(nextToken.name)){
-                netMap[nextToken.name] = [];
-            }
-
-            if(nextToken.name == "wlan" || nextToken.name == "uap"){
-                if(freqMap[completeName] != 2.4){ //floor.
-                    canAdd = false;
+            if(freqMap[nextToken.toString()]){
+                if(!netMap.has(nextToken.name)){
+                    netMap[nextToken.name] = [];
                 }
-                else{
-                    nextToken.freq = freqMap[completeName];
-                }
-            }
 
-            if(canAdd){
                 netMap[nextToken.name].push(nextToken);
             }
         }
@@ -124,112 +115,69 @@ let parseOs = (tokens:Token[]):ErrorType =>{
     return error;
 }
 
-let parseNet = (netMap:Map<string, Token[]>, interName?:string):ErrorType =>{ //load it to hashmap after. Keep method signatures uniform.
+let parseNet = (netMap:Map<string, Token[]>):ErrorType =>{ //load it to hashmap after. Keep method signatures uniform.
     let error:ErrorType = ErrorType.none;
-    let command:string = "bash /home/pi/rpihotspot/setup-network.sh"; //fix this 2 separate arguments.
 
     //turn off uap if it is not 2.4 ghz.
 
-    if(!netMap.has("wlan") || !netMap.has("ether")){
+    if(!netMap["wlan"]){
         error = ErrorType.net; //no internet.
     }
     else{
-        if(!netMap.has("uap")){
-            if(netMap.has("wlan")){
-                let wlans:Token[] = netMap["wlan"];
-                let searchRes:number = -1;
-                let command:string = "";
-
-                //either find by name, or find anything that has 2.4ghz.
-                for(let next:number = 0; next < wlans.length; ++next){
-                    let nextWlan = wlans[next];
-                    let completeName:string = nextWlan.toString();
-                    searchRes = next;
-
-                    if(interName){
-                        if(completeName == interName){
-                            break;
-                        }
-                    }
-                    else{
-                        break;
-                    }
-                }
-
-                if(searchRes == -1){
-                    error = ErrorType.hotspot; //maybe add hotspot error types.
-                }
-                else{
-                    runCommand(); //will work.
-                }
-            }
-        }
-        else{
-            if(!netMap.has("wlan")){ //uap is based on wlan, makes no sense to check ethernet.
-                error = ErrorType.net;
-            }
+        if(!netMap["uap"]){
+            error = ErrorType.hotspot;
         }
     }
 
     return error;
 }
 
-let clean = (netMap:Map<string, Token[]>):void =>{
-    if(netMap.has("uap")){
-        runCommand("");
-    }
-}
-
 // add log feature to log installation and other errors. Will ctrl+c kill everything?
 let main = ():void =>{
     //let lex = new lexer.Lexer(); //eh?
-    let argv:string[] = process.argv;
+    let argv:string[] = process.argv; //no need to integrate the auto launcher for hotspot, since attacker can replace that file with anything. I would need to make a separate lexer to verify its content validity. 
     let startLog:boolean = false;
     //let interName:string = null;
+    let error:ErrorType = ErrorType.none;
     let uid:string[] = runCommand("whoami").split('');
 
     uid.pop();
 
     if(uid.join('') != "root"){
-        logError(ErrorType.sudo);
+        error = ErrorType.sudo;
     }
     else{
         let res:string = runCommand("cat", ["/etc/os-release"]);
         let tokens:Token[] = Scanner.getOsTokens(res.split(''));
-        let error:ErrorType = parseOs(tokens);
+        error = parseOs(tokens);
 
-        if(error != ErrorType.none){
-            logError(error);
-        }
-        else{
+        if(error == ErrorType.none){
             res  = runCommand("ifconfig", ["--version"]);
     
-            if(!res && !runCommand("apt", ["install", "net-tools"])){ //fix this.
-                logError(ErrorType.ifconfig); //change this error.
+            if(!res && !runCommand("apt", ["install", "net-tools"])){
+                error = ErrorType.ifconfig;
             }
             else{
                 res = runCommand("iw", ["dev"]);
-                tokens = Scanner.getIwTokens(res.split(''));
-                let freqMap:Map<string, number> = createFreqMap(tokens);
+                tokens = Scanner.getFreqTokens(res.split(''));
+                let freqMap:Map<string, boolean> = createFreqMap(tokens);
+
                 res = runCommand("ifconfig");
-                tokens = Scanner.getIfTokens(res.split(''));
+                tokens = Scanner.getNetTokens(res.split(''));
                 let netMap:Map<string, Token[]> = createNetMap(tokens, freqMap);
                 error = parseNet(netMap);
     
-                if(error != ErrorType.none){
-                    logError(ErrorType.net);
-                }
-                else{
-                    // if(startServer(startLog)){
-                    //     startRos(startLog);
-                    //     //add message
-                    // }
-
-                    console.log("ta da!!!!");
+                if(error == ErrorType.none){
+                    startServer();
                 }
             }
         }
     }
+
+    if(error != ErrorType.none){
+        logError(error);
+    }
+}
 
     
 
@@ -246,7 +194,5 @@ let main = ():void =>{
     //         }
     //     }
     // }
-    
-}
 
 main();
