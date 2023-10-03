@@ -1,0 +1,18 @@
+{
+  "name": "sd2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "router.js",
+  "scripts": {
+    "start": "tsc && node router.js",
+    "clean": "del *.js *.map"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.6.3",
+    "@types/ws": "^8.5.6",
+    "ws": "^8.14.2",
+    "roslib": "^1.3.0"
+  }
+}
