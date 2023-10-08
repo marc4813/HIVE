@@ -3,7 +3,7 @@
 """
 boot.py
 
-Defines a state that waits for 45 seconds before returning 'success'. Returns 'fail' otherwise. 
+Defines a state that waits for all data streams before returning 'success'. Returns 'fail' otherwise. 
 
 """
 

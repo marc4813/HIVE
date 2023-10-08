@@ -8,7 +8,8 @@
 	
 	To be added: 
 	Autonomous mapping 
-	Autonomous navigation and payload pick-up/drop-off
+	Autonomous navigation
+	Payload pick-up/drop-off
 """
 
 import rospy
@@ -17,8 +18,8 @@ import smach
 # States here:
 from boot import Boot 
 from standby import Standby
-from teleop import Teleop 
-
+from teleop import Teleop
+from map import Map
 
 def main():
 	rospy.init_node('agent_state_machine')
@@ -32,12 +33,18 @@ def main():
 
 		# TODO: Add mapping state and auto-nav state(s)
 		smach.StateMachine.add('STANDBY', Standby(),
-					transitions={'teleop': 'TELEOP'})
+					transitions={'teleop': 'TELEOP',
+				  			'map': 'MAP'})
 
 		smach.StateMachine.add('TELEOP', Teleop(),
-					transitions={'standby': 'STANDBY'})
+					transitions={'standby': 'STANDBY',
+				  			'map': 'MAP'})
+		
+		smach.StateMachine.add('MAP', Map(),
+					transitions={'complete': 'STANDBY',
+				  			'exit': 'STANDBY'})
+
 	outcome = sm.execute()
 
 if __name__ == '__main__':
 	main()
-

@@ -108,6 +108,7 @@
     <xacro:gripper_total name="gripper_4b" mass="0.4" length="${gripper_length}" width="${gripper_width}" height="${gripper_height}" r="0" p="0" y="0" xyz=" ${gripper_b_offset_x} ${gripper_b_offset_y} ${gripper_b_offset_z}"/>
     <xacro:gripper_negative_joint name="gripper_4b" x_offset="${base_length/2}" y_offset="${base_width/2}" z_offset="0" reflect_x="-1" reflect_y="-1"/>
     
+    <!--
     <xacro:transmission name="gripper_1a"/>
     <xacro:transmission name="gripper_1b"/>
     <xacro:transmission name="gripper_2a"/>
@@ -116,6 +117,7 @@
     <xacro:transmission name="gripper_3b"/>
     <xacro:transmission name="gripper_4a"/>
     <xacro:transmission name="gripper_4b"/>
+    -->
     
     <!-- lidar link -->
     <xacro:box_total name="laser" mass="${lidar_mass}" width="${lidar_width}" height="${lidar_height}" length="${lidar_length}"/>

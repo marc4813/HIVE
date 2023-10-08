@@ -16,7 +16,7 @@ class Teleop(smach.State):
 		self.joystick_sub = rospy.Subscriber('agent1/joystick', Twist, self.joystick_cb)
 		self.command_sub = rospy.Subscriber('agent1/command', Twist, self.command_cb)
 		self.twist_pub = rospy.Publisher('agent1/cmd_vel', Twist, queue_size=10)
-		smach.State.__init__(self, outcomes=['standby']) # TODO: Add auto-nav and map state transitions.
+		smach.State.__init__(self, outcomes=['standby', 'map']) # TODO: Add auto-nav and map state transitions.
 		self.command = 0
 		self.waypoint = [0,0]
 
