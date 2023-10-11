@@ -1,0 +1,22 @@
+digraph G {
+"agent1/base_link" -> "agent1/gripper_1a"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 50.2\nBuffer length: 5.0\nMost recent transform: 102.767\nOldest transform: 97.767\n"];
+"agent1/odom" -> "agent1/base_link"[label=" Broadcaster: /gazebo\nAverage rate: 1.249\nBuffer length: 4.004\nMost recent transform: 102.725\nOldest transform: 98.721\n"];
+"agent1/base_link" -> "agent1/gripper_1b"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 50.2\nBuffer length: 5.0\nMost recent transform: 102.767\nOldest transform: 97.767\n"];
+"agent1/base_link" -> "agent1/gripper_2a"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 50.2\nBuffer length: 5.0\nMost recent transform: 102.767\nOldest transform: 97.767\n"];
+"agent1/base_link" -> "agent1/gripper_2b"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 50.2\nBuffer length: 5.0\nMost recent transform: 102.767\nOldest transform: 97.767\n"];
+"agent1/base_link" -> "agent1/gripper_3a"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 50.2\nBuffer length: 5.0\nMost recent transform: 102.767\nOldest transform: 97.767\n"];
+"agent1/base_link" -> "agent1/gripper_3b"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 50.2\nBuffer length: 5.0\nMost recent transform: 102.767\nOldest transform: 97.767\n"];
+"agent1/base_link" -> "agent1/gripper_4a"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 50.2\nBuffer length: 5.0\nMost recent transform: 102.767\nOldest transform: 97.767\n"];
+"agent1/base_link" -> "agent1/gripper_4b"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 50.2\nBuffer length: 5.0\nMost recent transform: 102.767\nOldest transform: 97.767\n"];
+"agent1/base_link" -> "agent1/imu_link"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"agent1/base_link" -> "agent1/laser"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"agent1/base_link" -> "agent1/back_left_wheel"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 102.706\nOldest transform: 97.806\n"];
+"agent1/base_link" -> "agent1/back_right_wheel"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 102.706\nOldest transform: 97.806\n"];
+"agent1/base_link" -> "agent1/front_left_wheel"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 102.706\nOldest transform: 97.806\n"];
+"agent1/base_link" -> "agent1/front_right_wheel"[label=" Broadcaster: /agent1/robot_state_publisher\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 102.706\nOldest transform: 97.806\n"];
+"map" -> "agent1/odom"[label=" Broadcaster: /agent1/hector_slam\nAverage rate: 6.601\nBuffer length: 4.999\nMost recent transform: 102.724\nOldest transform: 97.725\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 102.772"[ shape=plaintext ] ;
+}->"map";
+}

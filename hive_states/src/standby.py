@@ -15,10 +15,15 @@ import rospy
 import smach
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Int32
+from rospkg import RosPack
+import roslaunch
 
 class Standby(smach.State):
-	def __init__(self):
-		self.command_sub = rospy.Subscriber('agent1/command', Int32, self.command_cb)
+	def __init__(self, agent_id = '1'):
+		self.agent_id = agent_id
+		self.namespace = f"agent{self.agent_id}"
+		self.cmd_topic = f"/{self.namespace}/command"
+		self.command_sub = rospy.Subscriber(self.cmd_topic, Int32, self.command_cb)
 		smach.State.__init__(self, outcomes=['teleop', 'map']) # TODO: Add auto-nav and map state transitions.
 		self.command = 0
 		self.waypoint = [0,0]

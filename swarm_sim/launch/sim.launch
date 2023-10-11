@@ -37,13 +37,9 @@
         
         <include file="$(find agent_nav)/launch/nav.launch"/>
         
+        <include file="$(find hive_states)/launch/explore.launch"/>
         <!-- <include file="$(find hive_states)/launch/states.launch"/> -->
 
-        <node pkg="laser_filters" type="scan_to_scan_filter_chain" output="screen" name="laser_filter">
-            <remap from="scan" to="laserscan" />
-            <rosparam command="load" file="$(find agent_nav)/config/hector/filter.yaml" />
-        </node>
-        
     </group>
     
    <!-- 

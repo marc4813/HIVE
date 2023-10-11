@@ -10,6 +10,7 @@
 	Autonomous mapping 
 	Autonomous navigation
 	Payload pick-up/drop-off
+	Instatiation by parameter
 """
 
 import rospy
