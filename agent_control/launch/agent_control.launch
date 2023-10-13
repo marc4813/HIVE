@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find agent_control)/config/agent_control.yaml" command="load"/>
+
+  <!-- load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" args="gripper_1a_position_controller gripper_1b_position_controller gripper_2a_position_controller gripper_2b_position_controller gripper_3a_position_controller gripper_3b_position_controller gripper_4a_position_controller gripper_4b_position_controller joint_state_controller"/>
+
+
+</launch>

@@ -1,0 +1,13 @@
+slam_gmapping:
+  base_frame: agent1/base_link
+  map_frame: map
+  odom_frame: agent1/odom
+  map_update_interval: 4.0
+  maxUrange: 5.0
+  particles: 30
+  xmin: -40
+  xmax: 40
+  ymin: -40
+  ymax: 40
+  delta: 0.05
+  maxRange: 6.0

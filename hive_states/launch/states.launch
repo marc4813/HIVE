@@ -1,0 +1,4 @@
+<?xml version='1.0'?>
+<launch>
+	<node pkg='hive_states' name='agent_states' type='state_machine.py'/>
+</launch>
