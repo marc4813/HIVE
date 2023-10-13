@@ -17,7 +17,7 @@ from std_msgs.msg import Int32
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Twist
 import roslaunch
-from Map.srv import Map
+from hive_explore.srv import Map as mapsrv
 
 class Map(smach.State):
 	def __init__(self, agent_id = '1'):
@@ -27,14 +27,16 @@ class Map(smach.State):
 		self.cmd_topic = f"/{self.namespace}/command"
 		self.map_command = f"/{self.namespace}/start_mapping"
 		self.frontier_topic = f"/{self.namespace}/explore/frontiers"
-
+		self.sevrice_name = f"{self.namespace}/hive_explore/hive_explore_service"
 		self.timeout = 20 # How long to wait for new frontiers (seconds)
+
+		rospy.wait_for_service(self.sevrice_name)
 		self.command_sub = rospy.Subscriber(self.cmd_topic, Int32, self.cmd_callback)
 		self.frontier_sub = rospy.Subscriber(self.frontier_topic, MarkerArray, self.marker_callback)
 
+		self.hive_explore = rospy.ServiceProxy(self.sevrice_name, mapsrv)
 		self.kill_explore = False
 		self.last_recieved = rospy.get_time()
-		self.hive_explore = rospy.ServiceProxy("hive_explore_service", Map)
 
 
 	def cmd_callback(self, msg):
@@ -48,7 +50,6 @@ class Map(smach.State):
 		self.last_recieved = rospy.get_time()
 	
 	def execute(self, userdata):
-		rospy.wait_for_service("hive_explore_service")
 		rospy.loginfo("Starting mapping")
 		self.result = self.hive_explore(not self.kill_explore)
 
@@ -57,10 +58,5 @@ class Map(smach.State):
 			if self.kill_explore:
 				self.result = self.hive_explore(not self.kill_explore)
 				return 'exit'
-			
-			# We're finished mapping
-			if rospy.get_time() - self.last_recieved >= self.timeout:
-				self.result = self.hive_explore(not self.kill_explore)
-				return 'complete'
 
 		return 'complete' if not self.result else 'exit'

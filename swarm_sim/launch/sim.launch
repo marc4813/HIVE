@@ -38,7 +38,8 @@
         <include file="$(find agent_nav)/launch/nav.launch"/>
         
         <include file="$(find hive_states)/launch/explore.launch"/>
-        <!-- <include file="$(find hive_states)/launch/states.launch"/> -->
+        
+        <include file="$(find hive_states)/launch/states.launch"/>
 
     </group>
     
