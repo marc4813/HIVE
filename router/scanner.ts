@@ -1,5 +1,4 @@
 import {Token} from "./router";
-//const {test } = require("./router") check if it time left.
 
 export class Scanner{
     private static getType = (sym:string):string =>{
@@ -36,7 +35,7 @@ export class Scanner{
     }
 
     public static getOsTokens = (data:string[]):Token[] =>{
-        let tokens:Token[] = [];
+        let tokens:Token[] = new Array();
         let buffer:string = "";
         data.push('\n');
 
@@ -78,7 +77,7 @@ export class Scanner{
     }
 
     public static getFreqTokens = (data:string[]):Token[] =>{
-        let tokens:Token[] = [];
+        let tokens:Token[] = new Array();
         let buffer:string = "";
 
         for(let symIndex:number = 0; symIndex < data.length; ++symIndex){
@@ -123,7 +122,7 @@ export class Scanner{
     }
 
     public static getNetTokens = (data:string[]):Token[] =>{
-        let tokens:Token[] = [];
+        let tokens:Token[] = new Array();
         let buffer:string = "";
         
         for(let symIndex:number = 0; symIndex < data.length; ++symIndex){
@@ -142,7 +141,6 @@ export class Scanner{
                 buffer+=sym;
             }
             else if(type == "space"){
-                //console.log(tokens[tokens.length-1].data == "I");
                 if(tokens.length > 0){
                     if(!tokens[tokens.length-1].data || tokens[tokens.length-1].data == "I"){
                         if(buffer == "inet"){

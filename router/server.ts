@@ -1,18 +1,15 @@
-import { Server } from "http";
-import { WebSocketServer } from "ws";
-
+const fs = require("fs");
 const ws = require("ws");
 const roslib = require("roslib");
+import { WebSocketServer } from "ws";
 
 enum MessageTypes{
     geometry = 1,
-    laserscan,
-    status
+    laserscan
 };
 
-export let startServer = ():void =>{
+export let startServer = (logFile:string):void =>{
     const agents = new Array();
-    let canStart:boolean = false;
     let servRef:WebSocketServer;
 
     const ros = new roslib.Ros({
@@ -29,29 +26,12 @@ export let startServer = ():void =>{
             console.log("SUCCESS: Started the Web Socket Server on Port 80");
     
             server.on("connection", (agent)=>{
-                let isActive:boolean = true;
-        
                 agent.id = agents.length+1;
         
                 agents.push(agent);
         
-                console.log(`WS: agent ${agent.id} Connected`);
-        
-                const interval = setInterval(()=>{
-                    if(isActive){
-                        console.log(true);
-                        isActive = false;
-        
-                        agent.send(JSON.stringify({
-                            type: MessageTypes.status
-                        }));
-                    }
-                    else{
-                        agent.close();
-                    }
-                
-                }, 5000);
-        
+                console.log(`WS: Agent ${agent.id} Connected`);
+
                 const cmdVel = new roslib.Topic({
                     ros: ros,
                     name: "/agent"+agent.id+"/cmd_vel",
@@ -62,15 +42,24 @@ export let startServer = ():void =>{
                     ros: ros,
                     name: "/agent"+agent.id+"/laserscan",
                     messageType: "sensor_msgs/Laserscan"
-                })
-        
+                });
+
                 cmdVel.subscribe((data)=>{
                     console.log(`SUBSCRIBED: ${data}`);
+
+                    console.log(data);
         
                     const message = {
                         type: MessageTypes.geometry,
-                        linear: data.linear,
-                        angular: data.angular
+                        data: {
+                            linear: {
+                                x: data.linear.x,
+                                y: data.linear.y
+                            },
+                            angular:{
+                                z: data.angular.z
+                            }
+                        }
                     }
         
                     agent.send(JSON.stringify(message));
@@ -79,44 +68,49 @@ export let startServer = ():void =>{
                 agent.on("message", (data)=>{
                     const parsed = JSON.parse(data);
         
-                    console.log(`MESSAGE: ${parsed} from Agent ${agent.id}`);
+                    console.log(`MESSAGE: ${parsed.data} from Agent ${agent.id}`);
         
                     switch(parsed.type){
-                        case MessageTypes.laserscan: //fix this.
-                            let length:number = parsed[10];
+                        case MessageTypes.laserscan: //fix this. Will there be more?
+                            const data = parsed.data;
+                            const header = data.header;
+                            let seqId:number = header[0];
+                            let frameId:string = header[1];
+                            let numPts:number = header[2];
                             let ranges:number[] = [];
-        
-                            for(let next:number = 11; next < length; ++next){
-                                ranges.push(parsed[next]);
+                            let intensities:number[] = [];
+                            let flags:number[] = [];
+    
+                            for(let next:number = 0; next < numPts; ++next){
+                                intensities.push(data.intensity[next]);
+                                ranges.push(data.distance[next]);
+                                flags.push(data.flag[next]);
                             }
-        
-                            const message = new roslib.Message({
-                                header: new roslib.Message({
-                                    seq: parsed[0],
-                                    time_stamp: parsed[1],
-                                    frame_id: parsed[2]
-                                }),
-        
-                                angle_min: parsed[3],
-                                angel_max: parsed[4],
-                                angle_increment: parsed[5],
-                                time_increment: parsed[6],
-                                scan_time: parsed[7],
-                                range_min: parsed[8],
-                                range_max: parsed[9],
-                                ranges: ranges
-                            });
+
+                            const message = {
+                                "header":{
+                                    "stamp":{
+                                        "secs": 0,
+                                        "nsecs": 0
+                                    },
+                                    "seq": seqId,
+                                    "frame_id": frameId
+                                },
+                                "angle_min":  -6.28318977355957,
+                                "angle_max": 6.28318977355957,
+                                "angle_increment": 0.54,
+                                "scan_time": 0.0,
+                                "time_increment": 0.0,
+                                "range_min": 0.07999999821186066,
+                                "range_max": 8.0,
+                                "ranges": ranges,
+                                "intensities": intensities
+                            }
         
                             laserScan.publish(message);
         
                             console.log(`PUBLISHED: ${message} to Agent ${agent.id}`);
-                            //vs publisehd to cmd_vel.
-        
-                            break;
-                        
-                        case MessageTypes.status:
-                            isActive = true;
-                            
+
                             break;
                             
                         default:
@@ -124,30 +118,37 @@ export let startServer = ():void =>{
                     }
                 });
         
-                agent.on("close", ()=>{
+                agent.on("close", (code, data)=>{
+                    console.log(code);
                     console.log(`WS: Agent ${agent.id} Disconnected`);
         
-                    clearInterval(interval);
-        
                     agents.splice(agent.id-1, 1);
-                    
-                    for(let i:number = agent.id-1; i < agents.length; i++){
-                        agents[i].id--;
-                    }
                 });
+
+                agent.on("error", ()=>{
+                    console.log("no");
+                })
             });
         }
         catch(error){
-    
+            console.log("ERROR: Could not start the Web Socket Server");
+
+            if(logFile){
+                fs.writeFile(logFile, error, null);
+            }
         }
     });
 
     ros.on("error", (error:string)=>{
         console.log("ERROR: Lost Connection to the Robotic Backend");
+
+        if(logFile){
+            fs.writeFile(logFile, error, null);
+        }
     });
 
     ros.on("close", ()=>{
-        if(servRef){ //close through reference.
+        if(servRef){
             servRef.close();
         }
     });

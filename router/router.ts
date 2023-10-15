@@ -1,7 +1,7 @@
 const subProc = require("child_process");
 const fs = require("fs"); //add input for logging stuff.
-import {Scanner} from './scanner';
-import {startServer} from "./server";
+const Scanner = require('./scanner');
+const startServer = require("./server");
 
 export class Token{
     name:string; // wlan/eth, etc. VERSION
@@ -23,6 +23,7 @@ export class Token{
 
 export enum ErrorType{ //export this, so ros and websocket can use that.
     sudo = 1,
+    log,
     os,
     ifconfig,
     net,
@@ -47,11 +48,11 @@ export let logError = (error:ErrorType):void =>{
             console.log("Internet Connection");
             break;
         default:
-            console.log("2.4 GHz Hotspot");
+            console.log("2.4 GHz Hotspot. Download it from https://github.com/idev1/rpihotspot");
     }
 }
 
-let runCommand = (command:string, options?:string[]):string =>{
+let runCommand = (command:string, options?:string[], logFile?:string):string =>{
     let res:string = "";
     let object:any;
 
@@ -64,6 +65,11 @@ let runCommand = (command:string, options?:string[]):string =>{
 
     if(object.stdout){
         res = object.stdout.toString();
+    }
+    else{
+        if(logFile){
+            fs.writeFile(logFile, object.error, null);
+        }
     }
 
     return res;
@@ -94,7 +100,7 @@ let createNetMap = (tokens:Token[], freqMap:Map<string, boolean>):Map<string, To
         if(nextToken.data){
             if(freqMap[nextToken.toString()]){
                 if(!netMap.has(nextToken.name)){
-                    netMap[nextToken.name] = [];
+                    netMap[nextToken.name] = new Array();
                 }
 
                 netMap[nextToken.name].push(nextToken);
@@ -118,10 +124,8 @@ let parseOs = (tokens:Token[]):ErrorType =>{
 let parseNet = (netMap:Map<string, Token[]>):ErrorType =>{ //load it to hashmap after. Keep method signatures uniform.
     let error:ErrorType = ErrorType.none;
 
-    //turn off uap if it is not 2.4 ghz.
-
     if(!netMap["wlan"]){
-        error = ErrorType.net; //no internet.
+        error = ErrorType.net;
     }
     else{
         if(!netMap["uap"]){
@@ -132,18 +136,20 @@ let parseNet = (netMap:Map<string, Token[]>):ErrorType =>{ //load it to hashmap 
     return error;
 }
 
-// add log feature to log installation and other errors. Will ctrl+c kill everything?
 let main = ():void =>{
-    //let lex = new lexer.Lexer(); //eh?
-    let argv:string[] = process.argv; //no need to integrate the auto launcher for hotspot, since attacker can replace that file with anything. I would need to make a separate lexer to verify its content validity. 
-    let startLog:boolean = false;
-    //let interName:string = null;
+    let uid:string[];
     let error:ErrorType = ErrorType.none;
-    let uid:string[] = runCommand("whoami").split('');
+    let logFile:string = "";
+
+    if(process.argv.length == 3 && process.argv[3] == "-l"){
+        logFile = "RouterLog.txt";
+    }
+
+    uid = runCommand("whoami").split("");
 
     uid.pop();
 
-    if(uid.join('') != "root"){
+    if(uid.join("") != "root"){
         error = ErrorType.sudo;
     }
     else{
@@ -153,22 +159,22 @@ let main = ():void =>{
 
         if(error == ErrorType.none){
             res  = runCommand("ifconfig", ["--version"]);
-    
-            if(!res && !runCommand("apt", ["install", "net-tools"])){
+        
+            if(!res){
                 error = ErrorType.ifconfig;
             }
             else{
                 res = runCommand("iw", ["dev"]);
-                tokens = Scanner.getFreqTokens(res.split(''));
+                tokens = Scanner.getFreqTokens(res.split(""));
                 let freqMap:Map<string, boolean> = createFreqMap(tokens);
 
                 res = runCommand("ifconfig");
-                tokens = Scanner.getNetTokens(res.split(''));
+                tokens = Scanner.getNetTokens(res.split(""));
                 let netMap:Map<string, Token[]> = createNetMap(tokens, freqMap);
                 error = parseNet(netMap);
-    
+        
                 if(error == ErrorType.none){
-                    startServer();
+                    startServer(logFile);
                 }
             }
         }
@@ -178,21 +184,5 @@ let main = ():void =>{
         logError(error);
     }
 }
-
-    
-
-    // if(argv.length > 2){ //later.
-    //     if(argv[2] == "-l"){
-    //         startLog = true;
-    //     }
-        
-    //     if(argv.length == 3){
-    //         let searchRes:string = argv[3].match(/\w{4}/)[0];
-            
-    //         if(searchRes == "wlan"){
-    //             interName = argv[3];
-    //         }
-    //     }
-    // }
 
 main();
