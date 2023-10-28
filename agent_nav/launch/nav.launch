@@ -8,10 +8,14 @@
 		<rosparam command="load" file="$(find agent_nav)/config/mapping/filter.yaml" />
 	</node>
 
-	<rosparam command= "load" file = "$(find agent_nav)/config/mapping/hector.yaml"/>
-	<node pkg="hector_mapping" type="hector_mapping" name="hector_slam" output="screen">
-		<remap from="scan" to="scan_filtered"/>
+	<rosparam command= "load" file = "$(find agent_nav)/config/mapping/gmapping.yaml"/>
+	<node pkg="gmapping" type="slam_gmapping" name="gmapping_thing" output="screen" >
+		<remap from="scan" to="scan_filtered" />
+		<param name="odom_frame" value="agent1/odom" />
+		<param name="base_frame" value="agent1/base_link" />
 	</node>
+
+
 	
 	<node pkg = "move_base" type = "move_base" respawn = "false" name = "move_base" output = "screen">
 		<rosparam file = "$(find agent_nav)/config/costmap_params/costmap_common_params.yaml" command = "load" ns = "global_costmap" />

@@ -17,3 +17,9 @@ GlobalPlanner:                                  # Also see: http://wiki.ros.org/
   neutral_cost: 50                              # default 50
   cost_factor: 3.0                              # Factor to multiply each cost from costmap by, default 3.0
   publish_potential: true                       # Publish Potential Costmap (this is no
+
+recovery_behaviors:
+  - name: 'conservative_reset'
+    type: 'clear_costmap_recovery/ClearCostmapRecovery'
+  - name: 'aggressive_reset'
+    type: 'clear_costmap_recovery/ClearCostmapRecovery'
