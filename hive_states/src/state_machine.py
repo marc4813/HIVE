@@ -21,6 +21,7 @@ from boot import Boot
 from standby import Standby
 from teleop import Teleop
 from map import Map
+from nav import Nav
 
 def main():
 	rospy.init_node('agent_state_machine')
@@ -44,6 +45,10 @@ def main():
 		smach.StateMachine.add('MAP', Map(),
 					transitions={'complete': 'STANDBY',
 				  			'exit': 'STANDBY'})
+
+		smach.StateMachine.add('NAV', Nav(),
+					transitions={'complete': 'STANDBY',
+							'exit': 'STANDBY'})
 
 	outcome = sm.execute()
 
