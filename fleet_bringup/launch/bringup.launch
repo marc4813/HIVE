@@ -1,0 +1,34 @@
+<!-- Launches navigation stacks and state machines for all agents -->
+<launch>
+
+    <arg name="agent1_desc" default = "$(find swarm_sim)/models/agent1/model.urdf.xacro"/>
+    <arg name="agent2_desc" default = "$(find swarm_sim)/models/agent2/model.urdf.xacro"/>
+
+    <!-- command interpreter (high-level task allocator) -->
+    <node pkg='hive_states' name='cmd_interpreter' type='HighLevelSM.py'>
+        <param name="totalAgents" value="1" />
+    </node>
+
+    <group ns="agent1">
+
+        <param name = "robot_description" command="$(find xacro)/xacro --inorder $(arg agent1_desc)"/>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="tf_prefix" value="agent1" />
+        </node>    	
+        
+        <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher"/>
+        
+        <!-- <include file="$(find agent_control)/launch/agent_control.launch"/> -->
+        
+        <include file="$(find agent_nav)/launch/nav.launch"/>
+        
+        <include file="$(find hive_states)/launch/explore.launch"/>
+    </group>
+
+    <!-- State machine for agent_1 -->
+    <node pkg='hive_states' name='agent_states_1' type='state_machine.py'>
+        <param name="agent_id" value="1" />
+    </node>
+
+</launch>

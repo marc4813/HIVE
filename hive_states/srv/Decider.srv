@@ -1,8 +1,8 @@
-string type
-int32 id
-int32 command
-int32 x
-int32 y
-int32 z
+uint8 id
+uint8 command
+uint8 autoType
+float32 x
+float32 y
+float32 orientation
 ---
 bool error
