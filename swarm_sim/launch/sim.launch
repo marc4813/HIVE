@@ -7,18 +7,18 @@
     <arg name = "rviz" default = "false"/>
     <arg name="rviz_cfg" default = "$(find swarm_sim)/rviz/map_mode.rviz"/>
     <arg name="server_en" default="false"/>
+
+    <include file = "$(find fleet_bringup)/launch/bringup.launch"/>
    
     <!-- Launch gazebo ROS -->
     <include file = "$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="gui" value="$(arg gazebo)"/>
         <arg name ="world_name" value="$(find swarm_sim)/worlds/$(arg world).world"/>
     </include>
-    
+
     <group ns="agent1">
     
     	<node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_cfg)"/>
-    	
-    	<param name = "robot_description" command="$(find xacro)/xacro --inorder $(arg agent1_desc)"/>
     	
     	<!-- spawn agent1 -->
         <node pkg="gazebo_ros" type="spawn_model" name="spawn_agent1"
@@ -27,6 +27,5 @@
 
     </group>
 
-    <include file = "$(find fleet_bringup)/launch/bringup.launch"/>
     
 </launch>

@@ -35,14 +35,13 @@ class Map(smach.State):
 		self.frontier_sub = rospy.Subscriber(self.frontier_topic, MarkerArray, self.marker_callback)
 
 		self.hive_explore = rospy.ServiceProxy(self.sevrice_name, mapsrv)
-		self.kill_explore = False
+		self.cmd = 2
 		self.last_recieved = rospy.get_time()
 
 
 	def cmd_callback(self, msg):
 		# For now, 0 stops mapping. 
-		if msg.data == 0:
-			self.kill_explore = True
+		self.cmd = msg.data
 
 	def marker_callback(self, msg):
 		# Whenever we recieive a message, set hasMarkers to True.
@@ -51,12 +50,11 @@ class Map(smach.State):
 	
 	def execute(self, userdata):
 		rospy.loginfo("Starting mapping")
-		self.result = self.hive_explore(not self.kill_explore)
+		self.result = self.hive_explore(True)
 
 		while not rospy.is_shutdown():
-			# Mapping has been killed
-			if self.kill_explore:
-				self.result = self.hive_explore(not self.kill_explore)
+			# Standby transition has been requested
+			if self.cmd == 0:
 				return 'exit'
 
 		return 'complete' if not self.result else 'exit'

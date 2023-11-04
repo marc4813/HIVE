@@ -17,10 +17,9 @@ class Teleop(smach.State):
 		self.agent_id = agent_id
 		self.namespace = f"agent{self.agent_id}"
 		self.cmd_topic = f"/{self.namespace}/command"
-		self.joy_topic = f"/{self.namespace}/joystick"
+		self.joy_topic = "/joystick"
 		self.vel_topic = f"/{self.namespace}/cmd_vel"
-		self.joystick_sub = rospy.Subscriber(self.joy_topic, Twist, self.joystick_cb)
-		self.command_sub = rospy.Subscriber(self.cmd_topic, Twist, self.command_cb)
+		self.command = None
 		self.twist_pub = rospy.Publisher(self.vel_topic, Twist, queue_size=10)
 		
 		# Topic, publisher, and message for actuating grippers
@@ -36,17 +35,30 @@ class Teleop(smach.State):
 		self.command = msg.data
 
 	def joystick_cb(self, msg):
+		self.twist_pub.publish(msg)
 		# Since we're in 2D mode, use Z to actuate grippers.
 		self.actmsg = msg.linear.z
 		self.actPublisher.publish(self.actmsg)
-		self.twist_pub.publish(msg)
 
 	def execute(self, userdata):
+		
+		# If we're here, we recieved the teleop command. 
+		self.command = 1
+		# Begin listening on topics
+		command_sub = rospy.Subscriber(self.cmd_topic, Twist, self.command_cb)
+		joystick_sub = rospy.Subscriber(self.joy_topic, Twist, self.joystick_cb)
+
 		while not rospy.is_shutdown():
 			if self.command == 0:
+				command_sub.unregister()
+				joystick_sub.unregister()
 				return 'standby'
 			if self.command == 2:
+				command_sub.unregister()
+				joystick_sub.unregister()
 				return 'map'
 			if self.command == 3:
+				command_sub.unregister()
+				joystick_sub.unregister()
 				return 'nav'
 

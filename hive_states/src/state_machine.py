@@ -23,7 +23,11 @@ from nav import Nav
 
 def main():
 	rospy.init_node('agent_state_machine')
-	id = rospy.get_param('~agent_id')
+
+	if rospy.has_param("~agent_id"):
+		id = rospy.get_param('~agent_id')
+	else:
+		id = 1
 	sm = smach.StateMachine(outcomes=['shutdown'])
 
 	with sm: 
@@ -34,7 +38,8 @@ def main():
 		# TODO: Add mapping state and auto-nav state(s)
 		smach.StateMachine.add('STANDBY', Standby(agent_id=id),
 					transitions={'teleop': 'TELEOP',
-				  				 'map': 'MAP'})
+				  				 'map': 'MAP', 
+								 'nav': 'NAV'})
 
 		smach.StateMachine.add('TELEOP', Teleop(agent_id=id),
 					transitions={'standby': 'STANDBY',

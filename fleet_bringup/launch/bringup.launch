@@ -20,10 +20,6 @@
         <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher"/>
         
         <!-- <include file="$(find agent_control)/launch/agent_control.launch"/> -->
-        
-        <include file="$(find agent_nav)/launch/nav.launch"/>
-        
-        <include file="$(find hive_states)/launch/explore.launch"/>
     </group>
 
     <!-- State machine for agent_1 -->
@@ -31,4 +27,11 @@
         <param name="agent_id" value="1" />
     </node>
 
+    <arg name="node_start_delay" default="10.0" />  
+    <node name="listener" pkg="roscpp_tutorials" type="listener" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " />
+
+    <group ns = "agent1">
+        <include file="$(find agent_nav)/launch/nav.launch"/>
+        <include file="$(find hive_states)/launch/explore.launch"/>
+    </group>
 </launch>

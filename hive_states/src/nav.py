@@ -31,7 +31,7 @@ class Nav(smach.State):
         self.namespace = f'agent{agent_id}'
         self.received = False
         self.busy = False
-        self.result = False
+        self.result = None
         self.incomplete = True
         self.queue = queue.Queue()
 
@@ -40,8 +40,8 @@ class Nav(smach.State):
         self.actPublisher = rospy.Publisher(self.actPubTopic, Int32)
 
         # Service for auto-nav requests
-        self.goalServer = rospy.Service('auto', HIVE_AUTO, self.wpWrapper)
-        self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+        self.goalServer = rospy.Service(f'{self.namespace}/auto', HIVE_AUTO, self.wpWrapper)
+        self.client = actionlib.SimpleActionClient(f'{self.namespace}/move_base', MoveBaseAction)
 
     # Service calls and navigation commands are blocking, so we spin up a thread
     # to do the actual work, then return if the command will be executed
@@ -58,21 +58,24 @@ class Nav(smach.State):
         return HIVE_AUTOResponse(True)
 
 
-    def wpHandler(self, req):
+    def wpHandler(self, req, queue):
         self.client.wait_for_server()
-        self.data = MoveBaseGoal()
-        self.data.target_pose.header.frame_id = "map"
-        self.data.target_pose.header.stamp = rospy.Time.now()
+        goalPose = MoveBaseGoal()
+        goalPose.target_pose.header.frame_id = "map"
+        goalPose.target_pose.header.stamp = rospy.Time.now()
         
-        self.data.target_pose.pose.x = req.wpt.x
-        self.data.target_pose.pose.y = req.wpt.y
+        goalPose.target_pose.pose.position.x = req.wpt.x
+        goalPose.target_pose.pose.position.y = req.wpt.y
         # We're not using 3D mapping
-        self.data.target_pose.pose.z = 0
+        goalPose.target_pose.pose.position.z = 0
 
         q = quaternion_from_euler(0,0,req.wpt.theta)
-        self.data.target_pose.pose.orientation = q
+        goalPose.target_pose.pose.orientation.x = q[0]
+        goalPose.target_pose.pose.orientation.y = q[1]
+        goalPose.target_pose.pose.orientation.z = q[2]
+        goalPose.target_pose.pose.orientation.w = q[3]
 
-        self.client.send_goal(goal = self.data)
+        self.client.send_goal(goal= goalPose)
 
         wait = self.client.wait_for_result()
         if not wait:
@@ -91,9 +94,10 @@ class Nav(smach.State):
         
         self.incomplete = False
 
-    def execute(self):
-
+    def execute(self, userdata):
+        self.result = None
         while not rospy.is_shutdown() and self.incomplete:
             rospy.spin()
-
-        return 'complete' if self.result else 'exit'
+            if self.result is not None:
+                print(f'Goal reached:{self.result}')
+                return 'complete' if self.result else 'exit'
