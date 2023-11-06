@@ -1,6 +1,7 @@
 import cv2;
 import numpy as np;
 import math;
+from google.colab.patches import cv2_imshow;
 
 def inBound(y, x, yLim, xLim):
   return y < yLim and x < xLim;
@@ -8,15 +9,17 @@ def inBound(y, x, yLim, xLim):
 def countPixels(image, start, directions, used):
   yLim, xLim = image.shape;
   queue = [start];
-  res = [];
+  res = 0;
+  shape = [];
 
   while(queue):
     y, x = queue.pop(0);
 
     if(not used[y][x]):
+      dist = 0;
       used[y][x] = True;
-      
-      res.append((y, x));
+      res+=1;
+      shape.append((y, x));
 
       for dY, dX in directions:
         newY = y + dY;
@@ -25,40 +28,49 @@ def countPixels(image, start, directions, used):
         if(inBound(newY, newX, yLim, xLim)):
           if(image[newY][newX] == 0):
             queue.append((newY, newX));
-          else:
-            image[newY][newX] = 255;
 
-  return res;
+  return (res, shape);
 
-def clear(image, start, directions):
-  yLim, xLim = image.shape;
-  queue = [start];
-  used = np.zeros((yLim, xLim));
+def perm(shapes, currLoc, nShapes, used, temp, permBuffer):
+  if(currLoc == 4):
+    a = temp[0];
+    b = temp[1];
+    c = temp[2];
+    d = temp[3];
 
-  while(queue):
-    y, x = queue.pop(0);
+    yA, xA = a;
+    yB, xB = b;
+    yC, xC = c;
+    yD, xD = d;
 
-    if(not used[y][x]):
-      used[y][x] = True;
+    if(yA == yB and xA != xB):
+      if(yB != yC and xB == xC):
+        if(yC == yD and xC != xD):
+          if(yD != yA and xD == xA):
+            permBuffer.append(temp.copy());
+    return;
 
-      for dY, dX in directions:
-        newY = y + dY;
-        newX = x + dX;
+  for next in range(nShapes):
+    if(not used[next]):
+      dist = 0;
 
-        if(inBound(newY, newX, yLim, xLim) and image[newY][newX] != 1):
-          if(image[newY][newX] != 0):
-            queue.append((newY, newX));
-          else:
-            image[newY][newX] = 255;
+      if(currLoc != 0):
+        dist = math.dist(shapes[next], temp[currLoc-1]);
 
+      if(currLoc == 0 or (dist > 4.9 and dist < 10)):
+        used[next] = True;
+        temp.append(shapes[next]);
+        perm(shapes, currLoc+1, nShapes, used, temp, permBuffer);
+        temp.pop(currLoc);
+        used[next] = False;
+    
 def main():
-  image = cv2.imread("map.png");
+  image = cv2.imread("map4.png");
   image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY);
   height, width = image.shape;
   directions = [];
-  shapes = [];
-  finalSet = [];
-  locations = [];
+  coords = [];
+  finalShapes = [];
   used = np.zeros((height, width));
   dX = [-1, 0, 0, 1];
   dY = [0, -1, 1, 0];
@@ -69,51 +81,39 @@ def main():
 
   for y in range(height):
     for x in range(width):
-      if(image[y][x] < 254):
-        res = countPixels(image, (y, x), directions, used);
-        length = len(res);
+      if(image[y][x] == 0):
+          #move to separate thing (kn + n^2 vs kn^3)
+          res, shape = countPixels(image, (y, x), directions, used);
 
-        if(length >= 9 and length <= 30):
-          shapes.append(res);
+          if(res >= 1 and res <= 5):
+            for pair in shape:
+              coords.append(pair);
+          else:
+            for tempY, tempX in shape:
+              image[tempY][tempX] = 255;
+      else:
+        image[y][x] = 255;
 
-  nShapes = len(shapes);
+  nShapes = len(coords);
+  t = np.zeros((height, width));
 
-  while(nShapes >= 4):
-    coords = shapes.pop(0);
-    distances = [];
-    a = coords[0];
-    nShapes-=1;
-    
-    for shape in range(nShapes):
-      distance = math.dist(a, shapes[shape][0]);
-      distances.append((shapes[shape][0], distance, shape));
-
-    distances.sort(key = lambda comp : (comp[1]));
-
-    b = distances[0];
-    c = distances[1];
-    d = distances[2];
-
-    for index in [b[2], c[2]-1, d[2]-2]:
-      shapes.pop(index);
-
-    finalSet.append([a, b[0], c[0], d[0]]);
-
-    nShapes-=3;
-
-  for coords in finalSet:
-    topLeft = (coords[0][1], coords[0][0]);
-    bottomRight = (coords[3][1], coords[3][0]);
-    midX = math.floor((bottomRight[0] - topLeft[0]) / 2) + topLeft[0];
-    midY = math.floor((bottomRight[1] - topLeft[1]) / 2) + topLeft[1];
-    image = cv2.rectangle(image, topLeft, bottomRight, 1, 1);
-    
-    clear(image, (midY, midX), directions);
-
-    image[midY][midX] = 0;
-    
-    locations.append((midY, midX));
+  used = np.zeros(nShapes);
+  finalShapes = [];
+  perm(coords, 0, nShapes, used, [], finalShapes);
+  used = {};
+  finalShapes2 = [];
 
   cv2_imshow(image);
 
+  for shape in finalShapes:
+    a = shape[0];
+    b = shape[1];
+    c = shape[2];
+    midY = math.floor((b[0] + c[0]) / 2);
+    midX = math.floor((a[1] + b[1]) / 2);
+
+    image = cv2.rectangle(image, (a[1], a[0]), (c[1], c[0]), 0, 1);
+    image[midY][midX] = 0;
+
+  cv2_imshow(image);
 main();
