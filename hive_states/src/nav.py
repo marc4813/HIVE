@@ -10,12 +10,13 @@
 
     Implemented asynchronously to prevent clients from being blocked.
 
-    TODO: Actually test this thing
+    TODO: Verify this transitions to standby
 
 """
 
 import rospy
 import actionlib
+from actionlib_msgs.msg import GoalStatusArray
 import smach
 from move_base_msgs.msg import MoveBaseGoal, MoveBaseAction
 from std_msgs.msg import Int32
@@ -84,7 +85,9 @@ class Nav(smach.State):
             self.incomplete = False
             return
         
-        self.result = self.client.get_result()
+        status_msg = rospy.wait_for_message(f'{self.namespace}/move_base/status', GoalStatusArray)
+
+        self.result = (status_msg.status_list[0].status == 3)
 
         if req.payload or req.drop:
             # Actuate grippers
@@ -96,8 +99,7 @@ class Nav(smach.State):
 
     def execute(self, userdata):
         self.result = None
-        while not rospy.is_shutdown() and self.incomplete:
-            rospy.spin()
+        while not rospy.is_shutdown():
             if self.result is not None:
                 print(f'Goal reached:{self.result}')
                 return 'complete' if self.result else 'exit'
