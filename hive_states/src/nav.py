@@ -36,8 +36,11 @@ class Nav(smach.State):
         self.incomplete = True
         self.queue = queue.Queue()
 
+        # Use parameter server to signal if we're already navigating to a goal 
+        rospy.set_param(f'{self.namespace}/goalSet', False)
+
         # Topic and publisher for actuating grippers
-        self.actPubTopic = f'{self.namespace}/actRouter'
+        self.actPubTopic = f'/{self.namespace}/actRouter'
         self.actPublisher = rospy.Publisher(self.actPubTopic, Int32)
 
         # Service for auto-nav requests
@@ -53,6 +56,7 @@ class Nav(smach.State):
         
         # Spin up a thread
         self.busy = True
+        rospy.set_param(f'/{self.namespace}/goalSet', True)
         thread = threading.Thread(target=self.wpHandler, args=(req, self.queue))
         thread.start()
 
@@ -102,4 +106,5 @@ class Nav(smach.State):
         while not rospy.is_shutdown():
             if self.result is not None:
                 print(f'Goal reached:{self.result}')
+                rospy.set_param(f'{self.namespace}/goalSet', False)
                 return 'complete' if self.result else 'exit'
