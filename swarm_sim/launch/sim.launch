@@ -8,7 +8,9 @@
     <arg name="rviz_cfg" default = "$(find swarm_sim)/rviz/map_mode.rviz"/>
     <arg name="server_en" default="false"/>
 
-    <include file = "$(find fleet_bringup)/launch/bringup.launch"/>
+    <include file = "$(find fleet_bringup)/launch/bringup.launch">
+        <arg name="isSim" value="true"/>
+    </include>
    
     <!-- Launch gazebo ROS -->
     <include file = "$(find gazebo_ros)/launch/empty_world.launch">

@@ -1,6 +1,7 @@
 <!-- Launches navigation stacks and state machines for all agents -->
 <launch>
 
+    <arg name ="isSim" default="false"/>
     <arg name="agent1_desc" default = "$(find swarm_sim)/models/agent1/model.urdf.xacro"/>
     <arg name="agent2_desc" default = "$(find swarm_sim)/models/agent2/model.urdf.xacro"/>
 
@@ -31,7 +32,16 @@
     <node name="listener" pkg="roscpp_tutorials" type="listener" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " />
 
     <group ns = "agent1">
-        <include file="$(find agent_nav)/launch/nav.launch"/>
+        <group if="$(arg isSim)">
+            <include file="$(find agent_nav)/launch/nav.launch"/>
+            <param name="/isSim" value="true"/>
+        </group>
+
+        <group unless="$(arg isSim)">
+            <include file="$(find agent_nav)/launch/nav2.launch"/>
+            <param name="/isSim" value="false"/>
+        </group>
+         
         <include file="$(find hive_states)/launch/explore.launch"/>
     </group>
 </launch>
