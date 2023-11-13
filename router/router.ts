@@ -1,17 +1,17 @@
 const subProc = require("child_process");
 const fs = require("fs"); //add input for logging stuff.
-const Scanner = require('./scanner');
-const startServer = require("./server");
+import {Scanner} from "./scanner"
+import {connectToRos} from "./server"
 
 export class Token{
-    name:string; // wlan/eth, etc. VERSION
+    name:string;
     data:string;
     id:number;
     freq:number;
 
     constructor(name:string){
         this.name = name;
-        this.data = ""; //will it be initialized by default.
+        this.data = "";
         this.id = -1;
         this.freq = -1;
     }
@@ -21,7 +21,7 @@ export class Token{
     }
 }
 
-export enum ErrorType{ //export this, so ros and websocket can use that.
+export enum ErrorType{ 
     sudo = 1,
     log,
     os,
@@ -139,11 +139,6 @@ let parseNet = (netMap:Map<string, Token[]>):ErrorType =>{ //load it to hashmap 
 let main = ():void =>{
     let uid:string[];
     let error:ErrorType = ErrorType.none;
-    let logFile:string = "";
-
-    if(process.argv.length == 3 && process.argv[3] == "-l"){
-        logFile = "RouterLog.txt";
-    }
 
     uid = runCommand("whoami").split("");
 
@@ -174,7 +169,7 @@ let main = ():void =>{
                 error = parseNet(netMap);
         
                 if(error == ErrorType.none){
-                    startServer(logFile);
+                    connectToRos();
                 }
             }
         }

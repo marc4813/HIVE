@@ -2,10 +2,10 @@
   "name": "sd2",
   "version": "1.0.0",
   "description": "",
-  "main": "router.js",
+  "main": "server.js",
   "scripts": {
-    "start": "tsc && node router.js",
-    "clean": "del *.js *.map"
+    "start": "tsc && node server.js",
+    "clean": "del *.js"
   },
   "author": "",
   "license": "ISC",
