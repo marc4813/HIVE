@@ -18,7 +18,7 @@ import time
 class Boot(smach.State):
 	def __init__(self, agent_id = '1'):
 		smach.State.__init__(self, outcomes=['success', 'fail'])
-		self.laseronly = rospy.get_param("isSim")
+		self.laseronly = not (rospy.get_param("isSim"))
 		self.agent_id = agent_id
 		self.namespace = f"/agent{self.agent_id}/"
 		self.pcl_topic = f"{self.namespace}laserscan"
