@@ -14,7 +14,7 @@
 
         <param name = "robot_description" command="$(find xacro)/xacro --inorder $(arg agent1_desc)"/>
 
-        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="log">
             <param name="tf_prefix" value="agent1" />
         </node>    	
         

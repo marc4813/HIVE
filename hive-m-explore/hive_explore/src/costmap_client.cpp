@@ -122,8 +122,6 @@ void Costmap2DClient::updateFullMap(const nav_msgs::OccupancyGrid::ConstPtr& msg
   double origin_x = msg->info.origin.position.x;
   double origin_y = msg->info.origin.position.y;
 
-  ROS_DEBUG("received full new map, resizing to: %d, %d", size_in_cells_x,
-            size_in_cells_y);
   costmap_.resizeMap(size_in_cells_x, size_in_cells_y, resolution, origin_x,
                      origin_y);
 
@@ -134,12 +132,10 @@ void Costmap2DClient::updateFullMap(const nav_msgs::OccupancyGrid::ConstPtr& msg
   // fill map with data
   unsigned char* costmap_data = costmap_.getCharMap();
   size_t costmap_size = costmap_.getSizeInCellsX() * costmap_.getSizeInCellsY();
-  ROS_DEBUG("full map update, %lu values", costmap_size);
   for (size_t i = 0; i < costmap_size && i < msg->data.size(); ++i) {
     unsigned char cell_cost = static_cast<unsigned char>(msg->data[i]);
     costmap_data[i] = cost_translation_table__[cell_cost];
   }
-  ROS_DEBUG("map updated, written %lu values", costmap_size);
 }
 
 void Costmap2DClient::updatePartialMap(
