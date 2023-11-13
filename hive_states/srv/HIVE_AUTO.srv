@@ -1,0 +1,7 @@
+uint8 agent_id
+bool payload
+bool drop
+bool no_task
+geometry_msgs/Pose2D wpt
+---
+bool executed

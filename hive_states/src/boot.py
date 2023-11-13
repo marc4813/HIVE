@@ -18,6 +18,7 @@ import time
 class Boot(smach.State):
 	def __init__(self, agent_id = '1'):
 		smach.State.__init__(self, outcomes=['success', 'fail'])
+		self.laseronly = not (rospy.get_param("isSim"))
 		self.agent_id = agent_id
 		self.namespace = f"/agent{self.agent_id}/"
 		self.pcl_topic = f"{self.namespace}laserscan"
@@ -44,7 +45,11 @@ class Boot(smach.State):
 		rospy.loginfo(f"Agent {self.agent_id} state machine started.")
 		while not rospy.is_shutdown():
 
-			if self.pcl_online and self.imu_online and self.odom_online:
+			if self.pcl_online and self.laseronly:
+				print("All data streams online, transitioning to STANDBY..")
+				return 'success'
+			
+			if self.pcl_online and self.imu_online and self.odom_online and (not self.laseronly):
 				rospy.loginfo("All data streams online, transitioning to STANDBY..")
 				return 'success'
 	

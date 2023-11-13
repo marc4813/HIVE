@@ -1,5 +1,5 @@
 <launch>
-<node pkg="hive_explore" type="hive_explore" respawn="false" name="hive_explore" output="screen">
+<node pkg="hive_explore" type="hive_explore" respawn="false" name="hive_explore" output="log">
   <param name="robot_base_frame" value="base_link"/>
   <param name="costmap_topic" value="map"/>
   <param name="costmap_updates_topic" value="map_updates"/>

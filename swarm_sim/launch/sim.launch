@@ -4,61 +4,30 @@
     <!-- Command line arguments -->
     <arg name="gazebo" default = "false"/>
     <arg name="world" default = "test_env"/>
-    <arg name="agent1_desc" default = "$(find swarm_sim)/models/agent1/model.urdf.xacro"/>
-    <arg name="agent2_desc" default = "$(find swarm_sim)/models/agent2/model.urdf.xacro"/>
     <arg name = "rviz" default = "false"/>
     <arg name="rviz_cfg" default = "$(find swarm_sim)/rviz/map_mode.rviz"/>
     <arg name="server_en" default="false"/>
+
+    <include file = "$(find fleet_bringup)/launch/bringup.launch">
+        <arg name="isSim" value="true"/>
+    </include>
    
     <!-- Launch gazebo ROS -->
     <include file = "$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="gui" value="$(arg gazebo)"/>
         <arg name ="world_name" value="$(find swarm_sim)/worlds/$(arg world).world"/>
     </include>
-    
+
     <group ns="agent1">
     
     	<node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_cfg)"/>
     	
-    	<param name = "robot_description" command="$(find xacro)/xacro --inorder $(arg agent1_desc)"/>
-    	
     	<!-- spawn agent1 -->
-        <node pkg="gazebo_ros" type="spawn_model" name="spawn_agent1" 
+        <node pkg="gazebo_ros" type="spawn_model" name="spawn_agent1"
          args="-param robot_description -urdf -model agent1 -x 0.0 -y 0.0 -z 0.0 -Y 0.0" 
          respawn="false"/>
 
-        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
-            <param name="tf_prefix" value="agent1" />
-        </node>    	
-  		
-        <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher"/>
-        
-        <!-- <include file="$(find agent_control)/launch/agent_control.launch"/> -->
-        
-        <include file="$(find agent_nav)/launch/nav.launch"/>
-        
-        <include file="$(find hive_states)/launch/explore.launch"/>
-        
-        <include file="$(find hive_states)/launch/states.launch"/>
-
     </group>
+
     
-   <!-- 
-   <group ns="agent2">
-    	<param name = "robot_description" command="$(find xacro)/xacro inorder $(arg agent2_desc)"/>
-
-        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
-            <param name="tf_prefix" value="agent2" />
-        </node>    	
-    	
-        <node pkg="gazebo_ros" type="spawn_model" name="spawn_agent2" 
-         args="-param robot_description -urdf -model agent2 -x 0.0 -y -1.5 -z 0.0 -Y 0.0" 
-         respawn="false"/>
-         
-        <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher"/>
-        
-    </group>
-    -->
-
-
 </launch>

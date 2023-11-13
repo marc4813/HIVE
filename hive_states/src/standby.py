@@ -24,7 +24,7 @@ class Standby(smach.State):
 		self.namespace = f"agent{self.agent_id}"
 		self.cmd_topic = f"/{self.namespace}/command"
 		self.command_sub = rospy.Subscriber(self.cmd_topic, Int32, self.command_cb)
-		smach.State.__init__(self, outcomes=['teleop', 'map']) # TODO: Add auto-nav and map state transitions.
+		smach.State.__init__(self, outcomes=['teleop', 'map', 'nav']) # TODO: Add auto-nav and map state transitions.
 		self.command = 0
 		self.waypoint = [0,0]
 
@@ -37,3 +37,5 @@ class Standby(smach.State):
 				return 'teleop'
 			if self.command == 2:
 				return 'map'
+			if self.command == 3:
+				return 'nav'

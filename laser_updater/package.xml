@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>hive_states</name>
+  <name>laser_updater</name>
   <version>0.0.0</version>
-  <description>The hive_states package</description>
+  <description>The laser_updater package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/hive_states</url> -->
+  <!-- <url type="website">http://wiki.ros.org/laser_updater</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -48,9 +48,10 @@
   <!--   <test_depend>gtest</test_depend> -->
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
-  <build_depend>message_generation</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <exec_depend>message_runtime</exec_depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <build_depend>sensor_msgs</build_depend>
+  <exec_depend>sensor_msgs</exec_depend>
   <buildtool_depend>catkin</buildtool_depend>
 
 

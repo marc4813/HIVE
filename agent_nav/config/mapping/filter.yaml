@@ -1,18 +1,21 @@
-scan_filter_chain:
+laser_filter:
 - name: shadows
   type: laser_filters/ScanShadowsFilter
   params:
-    min_angle: 0
-    max_angle: 360
-    neighbors: 50
+    min_angle: 10
+    max_angle: 160
+    neighbors: 1
     window: 1
 
+    
+- name: interpolation
+  type: laser_filters/InterpolationFilter
 
 - name: speckle_filter
   type: laser_filters/LaserScanSpeckleFilter
   params:
     filter_type: 1
     max_range: 5
-    max_range_difference: 0.0001
+    max_range_difference: 0.001
     filter_window: 1
 

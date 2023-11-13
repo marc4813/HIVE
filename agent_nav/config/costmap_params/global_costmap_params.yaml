@@ -3,7 +3,7 @@ global_costmap:
   robot_base_frame: agent1/base_link
   update_frequency: 9.0
 
-  inflation_radius: 0.15
+  inflation_radius: 0.10
 
   origin_x: -20.0
   origin_y: -20.0
