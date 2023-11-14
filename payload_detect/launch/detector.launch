@@ -1,0 +1,4 @@
+<?xml version='1.0'?>
+<launch>
+	<node pkg='payload_detect' name='payload_identifier' type='recognizer.py'/>
+</launch>
