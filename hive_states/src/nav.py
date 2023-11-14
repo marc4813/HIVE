@@ -100,6 +100,7 @@ class Nav(smach.State):
             self.actPublisher.publish(actuationcmd)
         
         self.incomplete = False
+        self.busy = False
 
     def execute(self, userdata):
         self.result = None
