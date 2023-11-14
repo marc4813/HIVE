@@ -90,9 +90,8 @@ def comp(perm):
 
   return (distAB, distBC, distCD)
     
-def findPayloads(image):
-  image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-  height, width = image.shape
+def findPayloads(grid, height, width):
+  image = np.empty((height, width))
   directions = []
   coords = []
   possibleLocations = []
@@ -101,6 +100,13 @@ def findPayloads(image):
   used = np.zeros((height, width))
   dX = [-1, 0, 0, 1]
   dY = [0, -1, 1, 0]
+
+  np.fill(image, 255)
+
+  for y in range(height):
+    for x in range(width):
+      if(grid[y][x] >= 90):
+        image[y][x] = 0
 
   for dx in dX:
     for dy in dY:
