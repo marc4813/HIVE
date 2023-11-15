@@ -8,11 +8,13 @@ class Mecanum {
     float x, y, z;
     void init();
     void scaleMotors (float* m1v, float* m2v, float* m3v, float* m4v);
+    float getMaxRPM();
   public:
     Motor m1, m2, m3, m4;
     Mecanum(Motor &m1, Motor &m2, Motor &m3, Motor &m4);
     void drive(float x, float y, float z);
     void stop();
+    void update();
     float getXVel();
     float getYVel();
     float getZVel();

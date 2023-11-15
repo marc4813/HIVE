@@ -15,10 +15,16 @@ void Motor::init() {
   pinMode(this->directionPin, OUTPUT);
   if (this->hallEffectPin > 0)
   {
-//    pinMode(this->hallEffectPin, INPUT); // commented out until hall effect pins are fixed
+    pinMode(this->hallEffectPin, INPUT);
   }
   this->speed = 0;
   this->direction = false;
+  this->lastHallReading = millis();
+  this->prevHallState = false;
+  this->currentRPM = 0;
+  this->saturatedTimeStart = 0;
+  this->prevDesiredRPM = 0;
+  this->prevRPMTime = 0;
 }
 
 // Controls the speed and direction of the motor based on the input.
@@ -28,27 +34,58 @@ void Motor::drive(int speed) {
 
   // Sets direction based off the sign of the input.
   // Changes direction and speed according to motor inversion status.
-//  if (!this->newDriver) {
-//    if (!this->inverse) {
-//      this->direction = speed <= 0;
-//      this->speed = constrain(speed > 0 ? speed : 255 + speed, 0, 255);
-//    } else {
-//      this->direction = speed > 0;
-//      this->speed = constrain(speed > 0 ? 255 - speed : -speed, 0, 255);
-//    }
-//  } else {
-    if (!this->inverse) {
-      this->direction = speed <= 0;
-      this->speed = min(abs(speed), 255);
-    }
-    else {
-      this->direction = speed > 0;
-      this->speed = min(abs(speed), 255);
-    }
-//  }
+  if (!this->inverse)
+  {
+    this->direction = speed <= 0;
+    this->speed = min(abs(speed), 255);
+  }
+  else
+  {
+    this->direction = speed > 0;
+    this->speed = min(abs(speed), 255);
+  }
+  if (this->speed >= 255 && this->saturatedTimeStart == 0)
+  {
+    this->saturatedTimeStart = millis();
+  }
+  else if (this->speed < 255)
+  {
+    this->saturatedTimeStart = 0;
+  }
   
   digitalWrite(this->directionPin, this->direction);
   analogWrite(this->speedPin, this->speed);
+}
+
+void Motor::setRPM(float desiredRPM)
+{
+  if (desiredRPM == 0)
+  {
+    this->drive(0);
+    return;
+  }
+  if (desiredRPM != this->prevDesiredRPM)
+  {
+    this->prevDesiredRPM = desiredRPM;
+    this->prevRPMTime = millis();
+    this->drive((desiredRPM / Motor::MaxRPM) * 255);
+  }
+  if (millis() - this->prevRPMTime > 250)
+  {
+    this->prevRPMTime = millis();
+    float currRPM = this->getRPM() * ((this->inverse ^ this->direction) ? -1 : 1);//(this->speed < 0 ? -1 : 1);
+    if (desiredRPM < currRPM)
+    {
+      this->drive(this->observedSpeed - 1);
+  //    --this->speed;
+    }
+    else if (desiredRPM > currRPM)
+    {
+      this->drive(this->observedSpeed + 1);
+  //    ++this->speed;
+    }
+  //  this->drive(this->speed);
+  }
 }
 
 // Returns a value from -255 to 255, indicating speed and direction relative to robot, accounting for inversion.
@@ -66,4 +103,45 @@ int Motor::getRawSpeed() {
 // Returns a boolean indicating the value sent to the direction pin of the motor.
 bool Motor::getDirection() {
   return this->direction;
+}
+
+float Motor::getRPM()
+{
+  if (this->hallEffectPin > 0)
+  {
+    bool currHallState = digitalRead(this->hallEffectPin) == LOW;
+    if (currHallState != this->prevHallState)
+    {
+      this->prevHallState = currHallState;
+      if (currHallState)
+      {
+        float currentMPR = (millis() - this->lastHallReading) / 1000.0 * HallReadingsPerRev / 60.0; // minutes per rev
+        this->lastHallReading = millis();
+        if (currentMPR == 0)
+          this->currentRPM = 0;
+        else
+        {
+          this->currentRPM = 1.0 / currentMPR;
+          // += and /= for averaging to get smoother readings
+//          this->currentRPM += 1.0 / currentMPR;
+//          this->currentRPM /= 2.0;
+        }
+      }
+    }
+    else if (millis() - this->lastHallReading >= 500)
+    {
+      this->currentRPM = 0;
+    }
+  }
+  return this->currentRPM;
+}
+
+bool Motor::isSaturated()
+{
+  return this->saturatedTimeStart != 0 && millis() - this->saturatedTimeStart >= 500;
+}
+
+float Motor::returnRPM()
+{
+  return this->currentRPM;
 }

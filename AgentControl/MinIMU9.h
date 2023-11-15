@@ -12,6 +12,7 @@ class MinIMU9 {
   private:
     float accelErrors[3];
     float gyroErrors[3];
+    float magErrors[3];
     unsigned long gyro_time[3];
     bool isOpened = false;
     
