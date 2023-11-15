@@ -10,6 +10,9 @@
         <param name="totalAgents" value="1" />
     </node>
 
+    <!-- Payload detector -->
+    <include file="$(find payload_detect)/launch/detector.launch"/>
+
     <group ns="agent1">
 	<node name="laser_updater" pkg="laser_updater" type="laser_updater" args="/agent1/raw_laser /agent1/laserscan" respawn="true" />
         <param name = "robot_description" command="$(find xacro)/xacro --inorder $(arg agent1_desc)"/>
