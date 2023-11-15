@@ -2,10 +2,10 @@ slam_gmapping:
   map_update_interval: 1.0
   maxUrange: 5.0
   particles: 30
-  xmin: -10
-  xmax: 10
-  ymin: -10
-  ymax: 10
+  xmin: -5
+  xmax: 5
+  ymin: -5
+  ymax: 5
   delta: 0.6
   maxRange: 3.0
 

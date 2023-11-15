@@ -1,4 +1,4 @@
-laser_filter:
+scan_filter_chain:
 - name: shadows
   type: laser_filters/ScanShadowsFilter
   params:
@@ -7,6 +7,14 @@ laser_filter:
     neighbors: 1
     window: 1
 
+- name: range
+  type: laser_filters/LaserScanRangeFilter
+  params:
+    use_message_range_limits: false
+    lower_threshold: 0.51
+    upper_threshold: .inf
+    lower_replacement_value: 0
+    upper_replacement_value: 0
     
 - name: interpolation
   type: laser_filters/InterpolationFilter

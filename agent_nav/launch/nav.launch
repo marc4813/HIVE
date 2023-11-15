@@ -8,10 +8,10 @@
 		<remap from="scan" to="scan_filtered" />
 		<param name="odom_frame" value="agent1/odom" />
 		<param name="base_frame" value="agent1/base_link" />
-		<param name="xmin" value="-8.0"/>
-    	<param name="ymin" value="-8.0"/>
-    	<param name="xmax" value="8.0"/>
-    	<param name="ymax" value="8.0"/>
+		<param name="xmin" value="-5.0"/>
+    	<param name="ymin" value="-5.0"/>
+    	<param name="xmax" value="5.0"/>
+    	<param name="ymax" value="5.0"/>
 		<param name="delta" value="0.08"/>
 		<param name="maxUrange" value="4.0"/>
 		<param name="maxRange" value="3.5"/>

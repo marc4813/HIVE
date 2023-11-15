@@ -11,12 +11,12 @@
     </node>
 
     <group ns="agent1">
-
+	<node name="laser_updater" pkg="laser_updater" type="laser_updater" args="/agent1/raw_laser /agent1/laserscan" respawn="true" />
         <param name = "robot_description" command="$(find xacro)/xacro --inorder $(arg agent1_desc)"/>
 
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="log">
             <param name="tf_prefix" value="agent1" />
-        </node>    	
+        </node>
         
         <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher"/>
         
@@ -44,5 +44,8 @@
          
         <include file="$(find hive_states)/launch/explore.launch"/>
     </group>
+
+   <!-- Start payload detector -->
+   <include file="$(find payload_detect)/launch/detector.launch"/>
 
 </launch>
