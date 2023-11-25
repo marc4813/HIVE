@@ -48,23 +48,83 @@ def markUsed(image, start, directions, used):
           if(image[newY][newX] == 0):
             queue.append((newY, newX))
 
+def isNormal(temp):
+  res = False
+  a = temp[0]
+  b = temp[1]
+  c = temp[2]
+  d = temp[3]
+
+  yA, xA = a
+  yB, xB = b
+  yC, xC = c
+  yD, xD = d
+
+  if(yA == yB and xA != xB):
+    if(yB != yC and xB == xC):
+      if(yC == yD and xC != xD):
+        if(yD != yA and xD == xA):
+          res = True
+
+  return res
+
+def equalSides(temp):
+  a = temp[0]
+  b = temp[1]
+  c = temp[2]
+  d = temp[3]
+  distAB = math.dist(a, b)
+  distCD = math.dist(c, d)
+  distBC = math.dist(b, c)
+  distDA = math.dist(d, a)
+
+  return distAB == distCD and distBC == distDA
+
+def isNormal(temp):
+  res = False
+  a = temp[0]
+  b = temp[1]
+  c = temp[2]
+  d = temp[3]
+
+  yA, xA = a
+  yB, xB = b
+  yC, xC = c
+  yD, xD = d
+
+  if(yA == yB and xA != xB):
+    if(yB != yC and xB == xC):
+      if(yC == yD and xC != xD):
+        if(yD != yA and xD == xA):
+          res = True
+
+  return res and equalSides(temp)
+
+def isSlanted(temp):
+  res = False
+  a = temp[0]
+  b = temp[1]
+  c = temp[2]
+  d = temp[3]
+
+  yA, xA = a
+  yB, xB = b
+  yC, xC = c
+  yD, xD = d
+
+  if(yA < yB and xA < xB):
+    if(yB < yC and xB > xC):
+      if(yC > yD and xC > xD):
+        if(yD > yA and xD < xA):
+          res = True
+  
+  return res and equalSides(temp)
+
 def perm(shapes, currLoc, nShapes, used, temp, permBuffer):
   if(currLoc == 4):
-    a = temp[0]
-    b = temp[1]
-    c = temp[2]
-    d = temp[3]
+    if(isNormal(temp) or isSlanted(temp)):
+      permBuffer.append(temp.copy())
 
-    yA, xA = a
-    yB, xB = b
-    yC, xC = c
-    yD, xD = d
-
-    if(yA == yB and xA != xB):
-      if(yB != yC and xB == xC):
-        if(yC == yD and xC != xD):
-          if(yD != yA and xD == xA):
-            permBuffer.append(temp.copy())
     return
 
   for next in range(nShapes):
