@@ -100,13 +100,8 @@ def isNormal(temp):
 
   return res and equalSides(temp)
 
-def isSlanted(temp):
+def isLower(a, b, c, d):
   res = False
-  a = temp[0]
-  b = temp[1]
-  c = temp[2]
-  d = temp[3]
-
   yA, xA = a
   yB, xB = b
   yC, xC = c
@@ -117,7 +112,31 @@ def isSlanted(temp):
       if(yC > yD and xC > xD):
         if(yD > yA and xD < xA):
           res = True
-  
+
+  return res
+
+def isUpper(a, b, c, d):
+  res = False
+  yA, xA = a
+  yB, xB = b
+  yC, xC = c
+  yD, xD = d
+
+  if(yA > yB and xA < xB):
+    if(yB < yC and xB < xC):
+      if(yC < yD and xC > xD):
+        if(yD > yA and xD > xA):
+          res = True
+
+  return res
+
+def isSlanted(temp):
+  a = temp[0]
+  b = temp[1]
+  c = temp[2]
+  d = temp[3]
+  res = isUpper(a, b, c, d) or isLower(a, b, c, d)
+
   return res and equalSides(temp)
 
 def perm(shapes, currLoc, nShapes, used, temp, permBuffer):
