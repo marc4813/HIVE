@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include "sensor_msgs/LaserScan.h"
 #include "string.h"
+#include <limits>
 
 
 
@@ -19,13 +20,16 @@ class LaserScanTimeUpdater{
         }
 
         void laserScanCallback(const sensor_msgs::LaserScan::ConstPtr& input_scan){
-            // Create a copy of the input laser scan
             sensor_msgs::LaserScan updated_scan = *input_scan;
-
-            // Update the timestamp to the current time
             updated_scan.header.stamp = ros::Time::now();
 
-            // Publish the updated laser scan
+            // Remove points within circle encapsulating the entire agent.
+            for(int i = 0; i<665; ++i)
+            {
+                if(updated_scan.ranges[i] <= 0.3302 && updated_scan.ranges[i] > 0.02)
+                    updated_scan.ranges[i] = 0.00000;
+            } 
+
             updated_laser_scan_pub_.publish(updated_scan);
         }
 
